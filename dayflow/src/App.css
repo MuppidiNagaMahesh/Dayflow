@@ -708,8 +708,172 @@ button:focus-visible { outline:2px solid rgba(88,135,245,.42); outline-offset:2p
 button:focus:not(:focus-visible) { outline:none; }
 
 @media (max-width:700px) {
-  .planner-calendar { padding:14px; }
-  .calendar-cell { min-height:38px; border-radius:11px; }
-  .calendar-controls .soft-pill { padding:8px 10px; }
-  .habit-week, .habit-week-labels { max-width:180px; }
+
+  /* ===== iOS Liquid Glass Mobile Calendar ===== */
+
+  .planner-calendar {
+    padding: 16px 13px 17px;
+    margin-bottom: 14px;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .calendar-head {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .calendar-head h2 {
+    margin-top: 4px;
+    font-size: 19px;
+    letter-spacing: -.04em;
+  }
+
+  .calendar-controls {
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .calendar-controls .date-nav-button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 12px;
+  }
+
+  .calendar-controls .soft-pill {
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 10px;
+  }
+
+  .calendar-weekdays,
+  .calendar-grid {
+    gap: 5px;
+  }
+
+  .calendar-weekdays {
+    margin-bottom: 6px;
+  }
+
+  .calendar-weekdays span {
+    font-size: 9px;
+    letter-spacing: .04em;
+    opacity: .72;
+  }
+
+  .calendar-cell {
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+    height: 43px;
+    padding: 0;
+    border-radius: 13px;
+    background: rgba(255,255,255,.095);
+    border: 1px solid rgba(255,255,255,.13);
+  }
+
+  .calendar-cell strong {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .calendar-cell.selected {
+    background:
+      linear-gradient(
+        145deg,
+        rgba(105,157,255,.58),
+        rgba(116,105,255,.34)
+      );
+    border-color: rgba(255,255,255,.48);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.34),
+      0 7px 18px rgba(40,75,150,.20);
+    transform: scale(1.02);
+  }
+
+  .calendar-cell.today strong {
+    text-decoration: none;
+  }
+
+  .calendar-cell.today::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #72e0aa;
+    box-shadow: 0 0 8px rgba(114,224,170,.55);
+  }
+
+  .calendar-cell i {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: rgba(255,255,255,.88);
+  }
+
+  .calendar-cell.muted {
+    background: transparent;
+    border-color: transparent;
+    opacity: .2;
+  }
+
+  .calendar-cell:hover {
+    transform: none;
+  }
+
+  .calendar-cell.selected:hover {
+    transform: scale(1.02);
+  }
+
+  /* Keep the calendar comfortable on very narrow phones */
+  @media (max-width:380px) {
+    .planner-calendar {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      gap: 4px;
+    }
+
+    .calendar-cell {
+      min-height: 40px;
+      height: 40px;
+      border-radius: 11px;
+    }
+
+    .calendar-cell strong {
+      font-size: 12px;
+    }
+
+    .calendar-head h2 {
+      font-size: 18px;
+    }
+
+    .calendar-controls .date-nav-button {
+      width: 31px;
+      min-width: 31px;
+      height: 31px;
+    }
+
+    .calendar-controls .soft-pill {
+      min-height: 31px;
+      padding: 0 8px;
+    }
+  }
+
+  .habit-week,
+  .habit-week-labels {
+    max-width: 180px;
+  }
 }
