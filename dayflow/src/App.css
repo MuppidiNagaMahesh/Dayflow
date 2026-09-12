@@ -816,3 +816,111 @@ button:focus:not(:focus-visible) { outline:none; }
   .intention-modal .modal-textarea { min-height:150px; }
 }
 .timer-ring-value { stroke:var(--accent); }
+
+/* =========================================================
+   DAYFLOW V2.1 — FINAL UX POLISH
+   ========================================================= */
+
+/* Daily intention: clearer in both themes, but still frosted Liquid Glass. */
+.intention-modal {
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg, rgba(255,255,255,.30), rgba(255,255,255,.12)) !important;
+  border:1px solid rgba(255,255,255,.42) !important;
+  box-shadow:0 30px 90px rgba(20,48,92,.28), inset 0 1px 0 rgba(255,255,255,.38) !important;
+  backdrop-filter:blur(32px) saturate(155%) !important;
+  -webkit-backdrop-filter:blur(32px) saturate(155%) !important;
+}
+.intention-modal::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 85% 10%, rgba(125,181,255,.20), transparent 35%), linear-gradient(135deg, rgba(255,255,255,.08), transparent 55%);
+}
+.intention-modal > * { position:relative; z-index:1; }
+.app-shell.theme-light .intention-modal {
+  background:linear-gradient(145deg, rgba(255,255,255,.78), rgba(231,241,255,.58)) !important;
+  border-color:rgba(255,255,255,.86) !important;
+  box-shadow:0 30px 90px rgba(39,69,110,.22), inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.app-shell.theme-light .intention-modal .modal-textarea {
+  background:rgba(255,255,255,.82) !important;
+  color:#14243b !important;
+  border-color:rgba(54,82,120,.20) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.90), 0 8px 25px rgba(54,82,120,.07);
+}
+.app-shell.theme-light .intention-modal .modal-textarea:focus {
+  border-color:rgba(83,137,235,.50) !important;
+  box-shadow:0 0 0 3px rgba(83,137,235,.10), inset 0 1px 0 rgba(255,255,255,.90);
+}
+.app-shell.theme-dark .intention-modal {
+  background:linear-gradient(145deg, rgba(35,60,96,.52), rgba(255,255,255,.10)) !important;
+}
+.app-shell.theme-dark .intention-modal h2,
+.app-shell.theme-dark .intention-modal .section-label { color:#fff !important; }
+.app-shell.theme-dark .intention-modal .modal-description,
+.app-shell.theme-dark .intention-modal .char-count { color:rgba(255,255,255,.70) !important; }
+.app-shell.theme-dark .intention-modal .modal-textarea {
+  background:rgba(8,22,43,.28) !important;
+  color:#fff !important;
+  border-color:rgba(255,255,255,.25) !important;
+}
+
+/* Timer controls are real buttons, not decorative labels. */
+.timer-presets button {
+  flex:1;
+  min-width:0;
+  border:0;
+  padding:7px 4px;
+  border-radius:9px;
+  background:transparent;
+  color:var(--ui-muted);
+  cursor:pointer;
+  font-size:8px;
+  font-weight:700;
+}
+.timer-presets button.active {
+  color:var(--ui-text);
+  background:rgba(255,255,255,.20);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+}
+.app-shell.theme-light .timer-presets button.active {
+  background:rgba(255,255,255,.76);
+  color:#14243b;
+}
+.timer-circle span { white-space:nowrap; }
+
+/* Planner date strip: clean replacement for the removed monthly calendar. */
+.date-strip-navigator {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding-left:0;
+  padding-right:0;
+}
+
+/* Goal cards make the short/long distinction obvious. */
+.goal-type-summary .glass-card {
+  background:linear-gradient(145deg, rgba(255,255,255,.20), rgba(255,255,255,.08));
+}
+.app-shell.theme-light .goal-type-summary .glass-card {
+  background:linear-gradient(145deg, rgba(255,255,255,.70), rgba(231,241,255,.44));
+}
+
+/* Insights stay glassy on all screen sizes. */
+.insight-main, .metric-stack > .glass-card, .insight-note, .insight-tabs {
+  backdrop-filter:blur(24px) saturate(145%);
+  -webkit-backdrop-filter:blur(24px) saturate(145%);
+}
+
+@media (max-width:700px) {
+  .intention-modal {
+    border-radius:24px !important;
+    padding:20px !important;
+  }
+  .intention-modal .modal-head h2 { font-size:22px; }
+  .intention-modal .modal-textarea { min-height:155px; }
+  .timer-presets button { font-size:7px; padding:8px 3px; }
+  .date-strip-navigator > button:not(.date-nav-button) { min-width:58px; }
+}

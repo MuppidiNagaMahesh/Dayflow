@@ -280,14 +280,34 @@ function BottomNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }
 }
 
 function FocusTimer() {
+  const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(25 * 60);
   const [running, setRunning] = useState(false);
-  useEffect(() => { if (!running) return; const id = window.setInterval(() => setSeconds(s => s > 0 ? s - 1 : 0), 1000); return () => window.clearInterval(id); }, [running]);
-  useEffect(() => { if (seconds === 0) setRunning(false); }, [seconds]);
-  const total = 25 * 60;
+  const [preset, setPreset] = useState<"focus" | "short" | "long">("focus");
+  const total = minutes * 60;
+  useEffect(() => {
+    if (!running) return;
+    const id = window.setInterval(() => setSeconds(s => s > 0 ? s - 1 : 0), 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
+  useEffect(() => {
+    if (seconds === 0) {
+      setRunning(false);
+      if (preset === "focus") {
+        const today = dateKey(new Date());
+        const saved = Number(localStorage.getItem("dayflow-focus-minutes") || "0");
+        localStorage.setItem("dayflow-focus-minutes", String(saved + minutes));
+        localStorage.setItem("dayflow-focus-last", today);
+      }
+    }
+  }, [seconds, preset, minutes]);
+  const choosePreset = (kind: "focus" | "short" | "long") => {
+    const next = kind === "focus" ? 25 : kind === "short" ? 5 : 15;
+    setPreset(kind); setMinutes(next); setSeconds(next * 60); setRunning(false);
+  };
   const progress = ((total - seconds) / total) * 100;
   const radius = 48; const circumference = 2 * Math.PI * radius;
-  return <Glass className="focus-timer-card"><div className="card-head"><span className="section-label"><Icon name="clock" size={15} /> FOCUS TIMER</span><span className="timer-mode">25 MIN</span></div><div className="timer-ring-wrap"><svg className="timer-ring" viewBox="0 0 112 112"><circle className="timer-ring-track" cx="56" cy="56" r={radius}/><circle className="timer-ring-value" cx="56" cy="56" r={radius} strokeDasharray={`${(progress/100)*circumference} ${circumference}`}/></svg><div className="timer-center"><strong>{formatClock(seconds)}</strong><span>Focus time</span></div></div><div className="timer-controls"><button className="timer-circle" onClick={() => {setSeconds(total);setRunning(false)}} aria-label="Reset timer"><Icon name="reset" size={17}/></button><button className="timer-play" onClick={() => setRunning(v => !v)} aria-label={running ? "Pause timer" : "Start timer"}><Icon name={running ? "pause" : "play"} size={19}/></button><button className="timer-circle" onClick={() => {setSeconds(5*60);setRunning(false)}} aria-label="Five minute timer"><span>5</span></button></div><div className="timer-presets"><span className="active">Pomodoro</span><span>Short break</span><span>Long break</span></div></Glass>;
+  return <Glass className="focus-timer-card"><div className="card-head"><span className="section-label"><Icon name="clock" size={15} /> FOCUS TIMER</span><span className="timer-mode">{minutes} MIN</span></div><div className="timer-ring-wrap"><svg className="timer-ring" viewBox="0 0 112 112"><circle className="timer-ring-track" cx="56" cy="56" r={radius}/><circle className="timer-ring-value" cx="56" cy="56" r={radius} strokeDasharray={`${(progress/100)*circumference} ${circumference}`}/></svg><div className="timer-center"><strong>{formatClock(seconds)}</strong><span>{running ? "Stay focused" : "Focus time"}</span></div></div><div className="timer-controls"><button className="timer-circle" onClick={() => {setSeconds(total);setRunning(false)}} aria-label="Reset timer"><Icon name="reset" size={17}/></button><button className="timer-play" onClick={() => setRunning(v => !v)} aria-label={running ? "Pause timer" : "Start timer"}><Icon name={running ? "pause" : "play"} size={19}/></button><button className="timer-circle" onClick={() => setSeconds(s => Math.min(total, s + 60))} aria-label="Add one minute"><span>+1</span></button></div><div className="timer-presets"><button className={preset === "focus" ? "active" : ""} onClick={() => choosePreset("focus")}>Pomodoro</button><button className={preset === "short" ? "active" : ""} onClick={() => choosePreset("short")}>Short break</button><button className={preset === "long" ? "active" : ""} onClick={() => choosePreset("long")}>Long break</button></div></Glass>;
 }
 
 function HomePage({ tasks, setTasks, habits, onIntent, intention, user, onAddTask, onAddHabit, onNavigate }: { tasks: Task[]; setTasks: Dispatch<SetStateAction<Task[]>>; habits: Habit[]; onIntent: () => void; intention: string; user: string; onAddTask: () => void; onAddHabit: () => void; onNavigate: (p: Page) => void }) {
@@ -355,19 +375,30 @@ function JournalPage({ entries, setEntries, initialDate }: { entries: JournalEnt
 function InsightsPage({ tasks, habits, goals, planNotes, entries }: { tasks: Task[]; habits: Habit[]; goals: Goal[]; planNotes: Record<string,string>; entries: JournalEntry[] }) {
   const [range, setRange] = useState<"monthly"|"weekly"|"daily">("monthly");
   const now = new Date();
-  const startDate = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate()) : range === "weekly" ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay()+6)%7)) : new Date(now.getFullYear(), now.getMonth(), 1);
-  const endDate = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59) : range === "weekly" ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay()+6)%7) + 6, 23, 59, 59) : new Date(now.getFullYear(), now.getMonth()+1, 0, 23, 59, 59);
-  const inRange = (key?: string) => { if (!key) return false; const d = new Date(`${key}T12:00:00`); return d >= startDate && d <= endDate; };
-  const rangeTasks = tasks.filter(t => inRange(t.date || todayKey));
+  const today = dateKey(now);
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const rangeStart = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate()) : range === "weekly" ? monday : monthStart;
+  const rangeEnd = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59) : range === "weekly" ? new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6, 23, 59, 59) : new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+  const inRange = (key?: string) => { if (!key) return false; const d = new Date(`${key}T12:00:00`); return d >= rangeStart && d <= rangeEnd; };
+  const rangeTasks = tasks.filter(t => inRange(t.date || today));
   const completedTasks = rangeTasks.filter(t => t.done).length;
   const rangeEntries = entries.filter(e => inRange(e.day));
   const rangePlanNotes = Object.keys(planNotes).filter(inRange).length;
-  const habitChecks = habits.reduce((sum,h) => sum + Object.entries(h.history || {}).filter(([d,v]) => v && inRange(d)).length, 0);
+  const habitChecks = habits.reduce((sum, h) => sum + Object.entries(h.history || {}).filter(([d, v]) => Boolean(v) && inRange(d)).length, 0);
   const taskProgress = rangeTasks.length ? Math.round(completedTasks / rangeTasks.length * 100) : 0;
-  const habitProgress = habits.length ? Math.min(100, Math.round(habitChecks / Math.max(1, habits.length * (range === "daily" ? 1 : range === "weekly" ? 7 : 30)) * 100)) : 0;
+  const dayCount = range === "daily" ? 1 : range === "weekly" ? 7 : new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const habitProgress = habits.length ? Math.min(100, Math.round(habitChecks / Math.max(1, habits.length * dayCount) * 100)) : 0;
   const goalProgress = goals.length ? Math.round(goals.reduce((s,g)=>s+g.progress,0)/goals.length) : 0;
-  const values = range === "daily" ? [taskProgress, habitProgress, goalProgress, rangeEntries.length * 10, rangePlanNotes * 10, 70, 80] : Array.from({length:7},(_,i)=>Math.max(8, Math.round(((i+2)*13 + taskProgress) % 100)));
-  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="insights" size={16} /> REFLECT</div><h1>Notice the pattern.</h1><p>See your daily, weekly, and monthly progress in the same Liquid Glass view.</p></div></div><div className="insight-tabs"><button className={range === "monthly" ? "active" : ""} onClick={()=>setRange("monthly")}>Monthly</button><button className={range === "weekly" ? "active" : ""} onClick={()=>setRange("weekly")}>Weekly</button><button className={range === "daily" ? "active" : ""} onClick={()=>setRange("daily")}>Daily</button></div><div className="insight-grid"><Glass className="insight-main"><div className="section-title-row"><div><span className="section-label">{range.toUpperCase()} FLOW</span><h2>{range === "monthly" ? "Your month at a glance." : range === "weekly" ? "Your week at a glance." : "Today at a glance."}</h2></div><span className="soft-pill">{range === "monthly" ? now.toLocaleDateString(undefined,{month:"long",year:"numeric"}) : range === "weekly" ? "This week" : "Today"}</span></div><div className="bar-chart">{values.map((v,i)=><div className="bar-column" key={i}><div className="bar-track"><span style={{height:`${Math.max(8,v)}%`}}/></div><small>{range === "daily" ? ["Tasks","Habits","Goals","Notes","Plans","Focus","Mood"][i] : ["M","T","W","T","F","S","S"][i]}</small></div>)}</div></Glass><div className="metric-stack"><Glass><span className="section-label">TASKS</span><strong>{taskProgress}%</strong><p>{completedTasks} of {rangeTasks.length} completed</p></Glass><Glass><span className="section-label">HABITS</span><strong>{habitProgress}%</strong><p>{habitChecks} check-ins in range</p></Glass><Glass><span className="section-label">GOALS</span><strong>{goalProgress}%</strong><p>average progress</p></Glass></div></div><Glass className="insight-note"><div className="note-symbol"><Icon name="sun" size={22} /></div><div><span className="section-label">{range.toUpperCase()} SUMMARY</span><h3>{range === "monthly" ? "A wider view of your progress." : range === "weekly" ? "Small actions are adding up." : "Make today count."}</h3><p>{rangeEntries.length} journal entries · {rangePlanNotes} saved planning notes · {rangeTasks.length} tasks planned.</p></div></Glass></div>;
+  const focusMinutes = Number(localStorage.getItem("dayflow-focus-minutes") || "0");
+  const dailyScore = Math.min(100, Math.round((taskProgress * .55) + (habitProgress * .25) + (Math.min(100, focusMinutes / 60 * 100) * .20)));
+  const values = range === "daily"
+    ? [taskProgress, habitProgress, goalProgress, Math.min(100, rangeEntries.length * 25), Math.min(100, rangePlanNotes * 25), Math.min(100, focusMinutes / 60 * 100)]
+    : range === "weekly"
+      ? Array.from({length:7}, (_, i) => { const d = dateKey(addDays(monday, i)); const dayTasks = tasks.filter(t => (t.date || today) === d); const done = dayTasks.filter(t => t.done).length; const dayHabits = habits.reduce((sum,h) => sum + (h.history?.[d] ? 1 : 0), 0); return Math.min(100, dayTasks.length ? Math.round(done / dayTasks.length * 80 + dayHabits * 5) : dayHabits * 5); })
+      : Array.from({length:7}, (_, i) => { const d = new Date(now.getFullYear(), now.getMonth(), Math.max(1, now.getDate() - (6-i))); const key = dateKey(d); const dayTasks = tasks.filter(t => (t.date || today) === key); const done = dayTasks.filter(t => t.done).length; return dayTasks.length ? Math.round(done / dayTasks.length * 100) : 0; });
+  const labels = range === "daily" ? ["Tasks","Habits","Goals","Journal","Plans","Focus"] : range === "weekly" ? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] : Array.from({length:7},(_,i)=>`${i+1}`);
+  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="insights" size={16} /> REFLECT</div><h1>Notice the pattern.</h1><p>See your daily, weekly, and monthly progress in the same Liquid Glass view.</p></div></div><div className="insight-tabs"><button className={range === "monthly" ? "active" : ""} onClick={()=>setRange("monthly")}>Monthly</button><button className={range === "weekly" ? "active" : ""} onClick={()=>setRange("weekly")}>Weekly</button><button className={range === "daily" ? "active" : ""} onClick={()=>setRange("daily")}>Daily</button></div><div className="insight-grid"><Glass className="insight-main"><div className="section-title-row"><div><span className="section-label">{range.toUpperCase()} FLOW</span><h2>{range === "monthly" ? "Your month at a glance." : range === "weekly" ? "Your week at a glance." : "Today at a glance."}</h2></div><span className="soft-pill">{range === "monthly" ? now.toLocaleDateString(undefined,{month:"long",year:"numeric"}) : range === "weekly" ? "This week" : "Today"}</span></div><div className="bar-chart">{values.map((v,i)=><div className="bar-column" key={i}><div className="bar-track"><span style={{height:`${Math.max(6,v)}%`}}/></div><small>{labels[i]}</small></div>)}</div></Glass><div className="metric-stack"><Glass><span className="section-label">TASKS</span><strong>{taskProgress}%</strong><p>{completedTasks} of {rangeTasks.length} completed</p></Glass><Glass><span className="section-label">HABITS</span><strong>{habitProgress}%</strong><p>{habitChecks} check-ins in range</p></Glass><Glass><span className="section-label">DAY SCORE</span><strong>{dailyScore}%</strong><p>{focusMinutes} focus minutes recorded</p></Glass></div></div><Glass className="insight-note"><div className="note-symbol"><Icon name="sun" size={22} /></div><div><span className="section-label">{range.toUpperCase()} SUMMARY</span><h3>{range === "monthly" ? "A wider view of your progress." : range === "weekly" ? "Small actions are adding up." : "Make today count."}</h3><p>{rangeEntries.length} journal entries · {rangePlanNotes} saved planning notes · {rangeTasks.length} tasks planned · {goalProgress}% average goal progress.</p></div></Glass></div>;
 }
 
 function Modal({ title, eyebrow, children, onClose, className = "" }: { title: string; eyebrow: string; children: ReactNode; onClose: () => void; className?: string }) {
@@ -470,7 +501,7 @@ function App() {
       <div className="mobile-page-name">{title}</div>
     </div>
 
-    {modal === "intention" && <Modal className="intention-modal" eyebrow="DAILY INTENTION" title="What matters most today?" onClose={() => setModal(null)}><p className="modal-description">Choose one thing you want to give your attention to.</p><textarea className="modal-textarea" maxLength={200} value={draftIntent} onChange={e => setDraftIntent(e.target.value)} placeholder="Write your intention..." autoFocus /><div className="char-count">{draftIntent.length}/200</div><button className="primary-button full" onClick={() => { setIntentions(xs => ({ ...xs, [todayKey]: draftIntent.trim() })); setModal(null); }}>Save intention</button></Modal>}
+    {modal === "intention" && <Modal className="intention-modal glass-intention-modal" eyebrow="DAILY INTENTION" title="What matters most today?" onClose={() => setModal(null)}><p className="modal-description">Choose one thing you want to give your attention to.</p><textarea className="modal-textarea" maxLength={200} value={draftIntent} onChange={e => setDraftIntent(e.target.value)} placeholder="Write your intention..." autoFocus /><div className="char-count">{draftIntent.length}/200</div><button className="primary-button full" onClick={() => { setIntentions(xs => ({ ...xs, [todayKey]: draftIntent.trim() })); setModal(null); }}>Save intention</button></Modal>}
     {modal === "task" && <Modal className="task-modal" eyebrow="NEW TASK" title="Add a gentle task" onClose={() => setModal(null)}><label className="modal-field"><span>Task</span><input value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} placeholder="e.g. Finish DSA practice" autoFocus /></label><label className="modal-field"><span>Date</span><input value={prettyDate(newTask.date)} readOnly /></label><label className="modal-field"><span>Time</span><TimePicker value={newTask.time} onChange={time => setNewTask({ ...newTask, time })} /></label><button className="primary-button full" onClick={saveTask}>Add task <Icon name="check" size={17} /></button></Modal>}
     {modal === "habit" && <Modal eyebrow="NEW HABIT" title="Add a small routine" onClose={() => setModal(null)}><label className="modal-field"><span>Habit</span><input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="e.g. Stretch for 5 minutes" autoFocus /></label><button className="primary-button full" onClick={saveHabit}>Add habit <Icon name="check" size={17} /></button></Modal>}
   </div>;
