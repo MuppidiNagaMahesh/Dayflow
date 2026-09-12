@@ -30,6 +30,7 @@ type Goal = {
   title: string;
   progress: number;
   due: string;
+  term?: "short" | "long";
 };
 
 type JournalEntry = {
@@ -42,6 +43,16 @@ type JournalEntry = {
 function dateKey(d: Date) { return d.toISOString().slice(0, 10); }
 function addDays(base: Date, amount: number) { const d = new Date(base); d.setDate(d.getDate() + amount); return d; }
 function prettyDate(key: string) { return new Date(`${key}T12:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); }
+function timeToMinutes(value: string) {
+  const match = value.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return 0;
+  let hour = Number(match[1]) % 12;
+  if (match[3].toUpperCase() === "PM") hour += 12;
+  return hour * 60 + Number(match[2]);
+}
+function sortTasks(items: Task[]) { return [...items].sort((a,b) => timeToMinutes(a.time) - timeToMinutes(b.time)); }
+function formatClock(totalSeconds: number) { const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0"); const sec = (totalSeconds % 60).toString().padStart(2, "0"); return `${m}:${sec}`; }
+function formatTimeParts(value: string) { const match = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i); return match ? { hour: match[1], minute: match[2], period: match[3].toUpperCase() } : { hour: "9", minute: "00", period: "AM" }; }
 
 const today = new Date();
 const todayKey = dateKey(today);
@@ -63,9 +74,9 @@ const defaultHabits: Habit[] = [
 ];
 
 const defaultGoals: Goal[] = [
-  { id: "g1", title: "Finish my portfolio", progress: 72, due: "Sep 30" },
-  { id: "g2", title: "Read 12 books", progress: 48, due: "Dec 31" },
-  { id: "g3", title: "Build healthy routines", progress: 64, due: "Oct 15" },
+  { id: "g1", title: "Finish my portfolio", progress: 72, due: "Sep 30", term: "short" },
+  { id: "g2", title: "Read 12 books", progress: 48, due: "Dec 31", term: "long" },
+  { id: "g3", title: "Build healthy routines", progress: 64, due: "Oct 15", term: "short" },
 ];
 
 function uid(prefix: string) {
@@ -111,6 +122,10 @@ function Icon({ name, size = 20, stroke = 1.8 }: { name: string; size?: number; 
     case "edit": return <svg {...common}><path d="m4 20 4.2-1 9.9-9.9a2 2 0 0 0-2.8-2.8L5.4 16.2 4 20Z"/><path d="m13.8 7.2 3 3"/></svg>;
     case "trash": return <svg {...common}><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14M9 7l1-3h4l1 3"/></svg>;
     case "diamond": return <svg {...common}><path d="m6 3 6-1 6 1 3 5-9 14L3 8l3-5Z"/><path d="m3 8 18 0M9 3l3 5 3-5"/></svg>;
+    case "moon": return <svg {...common}><path d="M20 15.2A8 8 0 0 1 8.8 4 8 8 0 1 0 20 15.2Z"/></svg>;
+    case "play": return <svg {...common} fill="currentColor" stroke="none"><path d="M8 5.5v13L18 12 8 5.5Z"/></svg>;
+    case "pause": return <svg {...common} fill="currentColor" stroke="none"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>;
+    case "reset": return <svg {...common}><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 5v5h5"/></svg>;
     default: return <svg {...common}><circle cx="12" cy="12" r="8"/></svg>;
   }
 }
@@ -226,7 +241,7 @@ function TopBar({ onLogout, onOpenIntent, dark, setDark, weather }: { onLogout: 
           <span>{weather.label}</span>
         </div>
         <button className="theme-button" onClick={() => setDark(!dark)} title={dark ? "Switch to light mode" : "Switch to dark mode"} aria-label="Toggle theme">
-          <Icon name={dark ? "sun" : "spark"} size={18} />
+          <Icon name={dark ? "sun" : "moon"} size={18} />
         </button>
         <button className="icon-button small-only-mobile" onClick={onLogout} title="Log out"><Icon name="logout" size={18} /></button>
       </div>
@@ -264,8 +279,19 @@ function BottomNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }
   return <nav className="bottom-nav">{items.map(item => <button key={item.id} className={page === item.id ? "active" : ""} onClick={() => setPage(item.id)}><Icon name={item.icon} size={18} /><span>{item.label}</span></button>)}</nav>;
 }
 
+function FocusTimer() {
+  const [seconds, setSeconds] = useState(25 * 60);
+  const [running, setRunning] = useState(false);
+  useEffect(() => { if (!running) return; const id = window.setInterval(() => setSeconds(s => s > 0 ? s - 1 : 0), 1000); return () => window.clearInterval(id); }, [running]);
+  useEffect(() => { if (seconds === 0) setRunning(false); }, [seconds]);
+  const total = 25 * 60;
+  const progress = ((total - seconds) / total) * 100;
+  const radius = 48; const circumference = 2 * Math.PI * radius;
+  return <Glass className="focus-timer-card"><div className="card-head"><span className="section-label"><Icon name="clock" size={15} /> FOCUS TIMER</span><span className="timer-mode">25 MIN</span></div><div className="timer-ring-wrap"><svg className="timer-ring" viewBox="0 0 112 112"><circle className="timer-ring-track" cx="56" cy="56" r={radius}/><circle className="timer-ring-value" cx="56" cy="56" r={radius} strokeDasharray={`${(progress/100)*circumference} ${circumference}`}/></svg><div className="timer-center"><strong>{formatClock(seconds)}</strong><span>Focus time</span></div></div><div className="timer-controls"><button className="timer-circle" onClick={() => {setSeconds(total);setRunning(false)}} aria-label="Reset timer"><Icon name="reset" size={17}/></button><button className="timer-play" onClick={() => setRunning(v => !v)} aria-label={running ? "Pause timer" : "Start timer"}><Icon name={running ? "pause" : "play"} size={19}/></button><button className="timer-circle" onClick={() => {setSeconds(5*60);setRunning(false)}} aria-label="Five minute timer"><span>5</span></button></div><div className="timer-presets"><span className="active">Pomodoro</span><span>Short break</span><span>Long break</span></div></Glass>;
+}
+
 function HomePage({ tasks, setTasks, habits, onIntent, intention, user, onAddTask, onAddHabit, onNavigate }: { tasks: Task[]; setTasks: Dispatch<SetStateAction<Task[]>>; habits: Habit[]; onIntent: () => void; intention: string; user: string; onAddTask: () => void; onAddHabit: () => void; onNavigate: (p: Page) => void }) {
-  const todayTasks = tasks.filter(t => !t.date || t.date === todayKey);
+  const todayTasks = sortTasks(tasks.filter(t => !t.date || t.date === todayKey));
   const completed = todayTasks.filter(t => t.done).length;
   const progress = todayTasks.length ? Math.round((completed / todayTasks.length) * 100) : 0;
   const firstName = user.split(/[.@]/)[0] || "there";
@@ -276,6 +302,7 @@ function HomePage({ tasks, setTasks, habits, onIntent, intention, user, onAddTas
     <div className="dashboard-grid">
       <Glass className="focus-card card-tall"><div className="card-head"><span className="section-label"><span className="status-dot" /> FOCUS</span><button className="icon-button" onClick={onIntent}><Icon name="chevron" size={18} /></button></div><h2>Small steps create<br />bigger results.</h2><p>Keep your attention on what matters most today.</p><div className="thin-progress"><span style={{ width: `${Math.max(progress, 8)}%` }} /></div></Glass>
       <Glass className="progress-card card-tall"><div className="card-head"><span className="section-label"><Icon name="spark" size={15} /> DAILY PROGRESS</span><button className="icon-button"><Icon name="chevron" size={18} /></button></div><div className="progress-layout"><ProgressRing value={progress} /><div><h3>{progress === 100 ? "Beautiful work." : "Your day is ready."}</h3><p>Complete your first task to start building momentum.</p></div></div></Glass>
+      <FocusTimer />
       <Glass className="stat-card" onClick={onAddTask}><div className="card-head"><span className="section-label"><Icon name="plan" size={14} /> TASKS</span><button className="icon-button"><Icon name="plus" size={17} /></button></div><strong className="big-number">{todayTasks.length - completed}</strong><span>tasks left today</span></Glass>
       <Glass className="stat-card" onClick={onAddHabit}><div className="card-head"><span className="section-label"><Icon name="habit" size={14} /> HABITS</span><button className="icon-button"><Icon name="chevron" size={17} /></button></div><strong className="big-number">{habits.filter(h => h.done).length}</strong><span>habits completed</span></Glass>
       <Glass className="quote-card"><div className="card-head"><span className="section-label"><Icon name="quote" size={15} /> A LITTLE REMINDER</span></div><p>“You don't need a perfect day.<br />You just need a meaningful one.”</p></Glass>
@@ -286,27 +313,21 @@ function HomePage({ tasks, setTasks, habits, onIntent, intention, user, onAddTas
   </div>;
 }
 
-function PlanPage({ tasks, setTasks, onAddTask, onAddNote, onIntent }: { tasks: Task[]; setTasks: Dispatch<SetStateAction<Task[]>>; onAddTask: (date?: string) => void; onAddNote: (date: string) => void; onIntent: () => void }) {
-const [selectedDate, setSelectedDate] = useState(todayKey);
-  const [monthCursor, setMonthCursor] = useState(new Date(`${selectedDate}T12:00:00`));
-  const selectedTasks = tasks.filter(t => (t.date || todayKey) === selectedDate);
+function PlanPage({ tasks, setTasks, onAddTask, onAddNote, onIntent, planNotes, setPlanNotes }: { tasks: Task[]; setTasks: Dispatch<SetStateAction<Task[]>>; onAddTask: (date?: string) => void; onAddNote: (date: string) => void; onIntent: () => void; planNotes: Record<string,string>; setPlanNotes: Dispatch<SetStateAction<Record<string,string>>> }) {
+  const [selectedDate, setSelectedDate] = useState(todayKey);
+  const [noteDraft, setNoteDraft] = useState(planNotes[todayKey] || "");
+  useEffect(() => { setNoteDraft(planNotes[selectedDate] || ""); }, [selectedDate, planNotes]);
+  const selectedTasks = sortTasks(tasks.filter(t => (t.date || todayKey) === selectedDate));
   const completed = selectedTasks.filter(t => t.done).length;
   const toggle = (id: string) => setTasks(ts => ts.map(t => t.id === id ? { ...t, done: !t.done } : t));
   const selected = new Date(`${selectedDate}T12:00:00`);
   const dates = [-2, -1, 0, 1, 2].map(offset => addDays(selected, offset));
-  const first = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
-  const daysInMonth = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 0).getDate();
-  const startOffset = first.getDay();
-  const calendarCells = Array.from({ length: Math.ceil((startOffset + daysInMonth) / 7) * 7 }, (_, i) => i - startOffset + 1);
-  const monthName = monthCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-  const hasTask = (key: string) => tasks.some(t => (t.date || todayKey) === key);
-  const chooseDate = (key: string) => { setSelectedDate(key); setMonthCursor(new Date(`${key}T12:00:00`)); };
+  const savePlanNote = () => setPlanNotes(xs => ({ ...xs, [selectedDate]: noteDraft.trim() }));
   return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="calendar" size={16} /> PLANNER</div><h1>Plan your day.</h1><p>Move through your days without losing what you planned.</p></div><button className="primary-button" onClick={() => onAddTask(selectedDate)}><Icon name="plus" size={18} /> Add task</button></div>
-    <Glass className="planner-calendar"><div className="calendar-head"><div><span className="section-label">YOUR CALENDAR</span><h2>{monthName}</h2></div><div className="calendar-controls"><button className="date-nav-button" onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))}><Icon name="back" size={17} /></button><button className="soft-pill" onClick={() => { setMonthCursor(new Date()); setSelectedDate(todayKey); }}>Today</button><button className="date-nav-button" onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))}><Icon name="chevron" size={17} /></button></div></div><div className="calendar-weekdays">{["S","M","T","W","T","F","S"].map((d,i)=><span key={i}>{d}</span>)}</div><div className="calendar-grid">{calendarCells.map((day,i)=>{ if(day<1 || day>daysInMonth) return <span className="calendar-cell muted" key={i}/>; const key=dateKey(new Date(monthCursor.getFullYear(),monthCursor.getMonth(),day)); return <button key={key} className={`calendar-cell ${key===selectedDate?"selected":""} ${key===todayKey?"today":""}`} onClick={()=>chooseDate(key)}><strong>{day}</strong>{hasTask(key)&&<i/>}</button>; })}</div></Glass>
-    <div className="date-strip date-strip-navigator"><button className="date-nav-button" onClick={() => chooseDate(dateKey(addDays(selected, -1)))} title="Previous day"><Icon name="back" size={18} /></button>{dates.map(d => { const key = dateKey(d); return <button key={key} className={key === selectedDate ? "active" : ""} onClick={() => chooseDate(key)}><span>{d.toLocaleDateString(undefined,{weekday:"short"})}</span><strong>{d.getDate()}</strong></button>; })}<button className="date-nav-button" onClick={() => chooseDate(dateKey(addDays(selected, 1)))} title="Next day"><Icon name="chevron" size={18} /></button></div>
-    <div className="planner-day-caption"><span>{selectedDate === todayKey ? "TODAY" : prettyDate(selectedDate)}</span>{selectedDate !== todayKey && <button className="soft-pill" onClick={() => chooseDate(todayKey)}>Back to today</button>}</div>
+    <div className="date-strip date-strip-navigator"><button className="date-nav-button" onClick={() => setSelectedDate(dateKey(addDays(selected, -1)))} title="Previous day"><Icon name="back" size={18} /></button>{dates.map(d => { const key = dateKey(d); return <button key={key} className={key === selectedDate ? "active" : ""} onClick={() => setSelectedDate(key)}><span>{d.toLocaleDateString(undefined,{weekday:"short"})}</span><strong>{d.getDate()}</strong></button>; })}<button className="date-nav-button" onClick={() => setSelectedDate(dateKey(addDays(selected, 1)))} title="Next day"><Icon name="chevron" size={18} /></button></div>
+    <div className="planner-day-caption"><span>{selectedDate === todayKey ? "TODAY" : prettyDate(selectedDate)}</span>{selectedDate !== todayKey && <button className="soft-pill" onClick={() => setSelectedDate(todayKey)}>Back to today</button>}</div>
     <div className="planner-grid"><Glass className="today-plan"><div className="section-title-row"><div><span className="section-label">{selectedDate === todayKey ? "TODAY'S PLAN" : "DAY'S PLAN"}</span><h2>{prettyDate(selectedDate)}</h2></div><button className="icon-button" onClick={onIntent}><Icon name="sun" size={18} /></button></div><div className="task-list">{selectedTasks.length ? selectedTasks.map(t => <button className={`planner-task ${t.done ? "done" : ""}`} key={t.id} onClick={() => toggle(t.id)}><span className="check-circle large">{t.done && <Icon name="check" size={16} />}</span><span className="task-copy"><b>{t.title}</b><small>{t.time}</small></span><Icon name="chevron" size={18} /></button>) : <div className="empty-plan"><Icon name="plan" size={26} /><h3>A clear day.</h3><p>Add a task and it will stay saved for {prettyDate(selectedDate)}.</p></div>}</div><button className="add-row" onClick={() => onAddTask(selectedDate)}><Icon name="plus" size={17} /> Add task</button></Glass>
-      <div className="quick-column"><Glass className="quick-card"><div className="section-label">QUICK ACTIONS</div><div className="quick-actions"><button onClick={() => onAddTask(selectedDate)}><Icon name="plus" size={20} /><span>Add Task</span></button><button onClick={() => onAddNote(selectedDate)}><Icon name="journal" size={20} /><span>Add Note</span></button></div></Glass><Glass className="tip-card"><Icon name="spark" size={22} /><div><h3>Progress, not perfection.</h3><p>Your plans, notes, and reflections stay attached to their dates.</p></div></Glass><Glass className="plan-stats"><div><span>Completed</span><strong>{completed}</strong></div><div><span>Remaining</span><strong>{Math.max(0, selectedTasks.length - completed)}</strong></div></Glass></div>
+      <div className="quick-column"><Glass className="day-note-card"><div className="section-label"><Icon name="journal" size={15}/> DAY PLANNING NOTE</div><textarea value={noteDraft} onChange={e => setNoteDraft(e.target.value)} placeholder="Write the plan or important information for this day..."/><div className="day-note-actions"><span>{noteDraft.length}/500</span><button className="primary-button compact" onClick={savePlanNote}>Save note <Icon name="check" size={16}/></button></div></Glass><Glass className="quick-card"><div className="section-label">QUICK ACTIONS</div><div className="quick-actions"><button onClick={() => onAddTask(selectedDate)}><Icon name="plus" size={20} /><span>Add Task</span></button><button onClick={() => onAddNote(selectedDate)}><Icon name="journal" size={20} /><span>Add Note</span></button></div></Glass><Glass className="tip-card"><Icon name="spark" size={22} /><div><h3>Progress, not perfection.</h3><p>Your tasks and day notes stay attached to their dates.</p></div></Glass><Glass className="plan-stats"><div><span>Completed</span><strong>{completed}</strong></div><div><span>Remaining</span><strong>{Math.max(0, selectedTasks.length - completed)}</strong></div></Glass></div>
     </div></div>;
 }
 
@@ -317,9 +338,9 @@ function HabitsPage({ habits, setHabits, onAddHabit }: { habits: Habit[]; setHab
 }
 
 function GoalsPage({ goals, setGoals }: { goals: Goal[]; setGoals: Dispatch<SetStateAction<Goal[]>> }) {
-  const [showForm, setShowForm] = useState(false); const [goalName, setGoalName] = useState(""); const [due, setDue] = useState("");
-  const saveGoal=()=>{if(!goalName.trim())return; setGoals(gs=>[...gs,{id:uid("g"),title:goalName.trim(),progress:0,due:due||"No date"}]);setGoalName("");setDue("");setShowForm(false);};
-  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="goal" size={16} /> DIRECTION</div><h1>Goals with less pressure.</h1><p>Name what matters, track progress, and come back anytime.</p></div><button className="primary-button" onClick={()=>setShowForm(true)}><Icon name="plus" size={18}/> Add goal</button></div>{showForm&&<Glass className="goal-form"><div className="section-label"><Icon name="diamond" size={15}/> NEW GOAL</div><div className="goal-form-fields"><label className="modal-field"><span>Goal name</span><input value={goalName} onChange={e=>setGoalName(e.target.value)} placeholder="e.g. Get placed in a software role" autoFocus/></label><label className="modal-field"><span>Due date</span><input type="date" value={due} onChange={e=>setDue(e.target.value)}/></label></div><div className="goal-form-actions"><button className="secondary-button compact" onClick={()=>setShowForm(false)}>Cancel</button><button className="primary-button" onClick={saveGoal}>Save goal <Icon name="check" size={17}/></button></div></Glass>}<div className="goals-grid">{goals.map(g=><Glass className="goal-card" key={g.id}><div className="goal-card-head"><div className="goal-icon"><Icon name="diamond" size={21}/></div><span className="goal-due">Due {g.due}</span></div><h2>{g.title}</h2><div className="goal-progress-row"><span>{g.progress}%</span><span>complete</span></div><div className="goal-bar"><span style={{width:`${g.progress}%`}}/></div><div className="goal-buttons"><button className="secondary-button compact" onClick={()=>setGoals(gs=>gs.map(x=>x.id===g.id?{...x,progress:Math.min(100,x.progress+10)}:x))}>{g.progress>=100?"Completed":"Mark next step"} <Icon name="chevron" size={15}/></button><button className="icon-button" onClick={()=>setGoals(gs=>gs.filter(x=>x.id!==g.id))}><Icon name="trash" size={16}/></button></div></Glass>)}</div></div>;
+  const [showForm, setShowForm] = useState(false); const [goalName, setGoalName] = useState(""); const [due, setDue] = useState(""); const [term, setTerm] = useState<"short"|"long">("short");
+  const saveGoal=()=>{if(!goalName.trim())return; setGoals(gs=>[...gs,{id:uid("g"),title:goalName.trim(),progress:0,due:due||"No date",term}]);setGoalName("");setDue("");setTerm("short");setShowForm(false);};
+  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="goal" size={16} /> DIRECTION</div><h1>Goals with less pressure.</h1><p>Keep short-term wins and long-term direction in one calm place.</p></div><button className="primary-button" onClick={()=>setShowForm(true)}><Icon name="plus" size={18}/> Add goal</button></div>{showForm&&<Glass className="goal-form"><div className="section-label"><Icon name="diamond" size={15}/> NEW GOAL</div><div className="goal-form-fields"><label className="modal-field"><span>Goal name</span><input value={goalName} onChange={e=>setGoalName(e.target.value)} placeholder="e.g. Get placed in a software role" autoFocus/></label><label className="modal-field"><span>Goal type</span><select value={term} onChange={e=>setTerm(e.target.value as "short"|"long")}><option value="short">Short term</option><option value="long">Long term</option></select></label><label className="modal-field"><span>Due date</span><input type="date" value={due} onChange={e=>setDue(e.target.value)}/></label></div><div className="goal-form-actions"><button className="secondary-button compact" onClick={()=>setShowForm(false)}>Cancel</button><button className="primary-button" onClick={saveGoal}>Save goal <Icon name="check" size={17}/></button></div></Glass>}<div className="goal-type-summary"><Glass><span>SHORT TERM</span><strong>{goals.filter(g=>g.term !== "long").length}</strong><small>quick wins & milestones</small></Glass><Glass><span>LONG TERM</span><strong>{goals.filter(g=>g.term === "long").length}</strong><small>bigger direction</small></Glass></div><div className="goals-grid">{goals.map(g=><Glass className="goal-card" key={g.id}><div className="goal-card-head"><div className="goal-icon"><Icon name="diamond" size={21}/></div><span className={`goal-term ${g.term === "long" ? "long" : "short"}`}>{g.term === "long" ? "Long term" : "Short term"}</span><span className="goal-due">Due {g.due}</span></div><h2>{g.title}</h2><div className="goal-progress-row"><span>{g.progress}%</span><span>complete</span></div><div className="goal-bar"><span style={{width:`${g.progress}%`}}/></div><div className="goal-buttons"><button className="secondary-button compact" onClick={()=>setGoals(gs=>gs.map(x=>x.id===g.id?{...x,progress:Math.min(100,x.progress+10)}:x))}>{g.progress>=100?"Completed":"Mark next step"} <Icon name="chevron" size={15}/></button><button className="icon-button" onClick={()=>setGoals(gs=>gs.filter(x=>x.id!==g.id))}><Icon name="trash" size={16}/></button></div></Glass>)}</div></div>;
 }
 
 function JournalPage({ entries, setEntries, initialDate }: { entries: JournalEntry[]; setEntries: Dispatch<SetStateAction<JournalEntry[]>>; initialDate: string }) {
@@ -331,16 +352,32 @@ function JournalPage({ entries, setEntries, initialDate }: { entries: JournalEnt
   return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="journal" size={16} /> REFLECTION</div><h1>A page for your thoughts.</h1><p>Every entry stays saved by date, so you can read it tomorrow or later.</p></div></div><div className="journal-date-row"><button className="date-nav-button" onClick={() => setSelectedDate(dateKey(addDays(new Date(`${selectedDate}T12:00:00`), -1)))}><Icon name="back" size={17} /></button><Glass className="journal-date-pill"><span>JOURNAL DATE</span><strong>{prettyDate(selectedDate)}</strong></Glass><button className="date-nav-button" onClick={() => setSelectedDate(dateKey(addDays(new Date(`${selectedDate}T12:00:00`), 1)))}><Icon name="chevron" size={17} /></button>{selectedDate !== todayKey && <button className="soft-pill" onClick={() => setSelectedDate(todayKey)}>Today</button>}</div><div className="journal-grid"><Glass className="journal-composer"><div className="section-label"><Icon name="spark" size={15} /> {selectedDate === todayKey ? "NEW ENTRY" : `ENTRY FOR ${prettyDate(selectedDate).toUpperCase()}`}</div><textarea value={text} onChange={e => setText(e.target.value)} placeholder="What is on your mind today?" /><div className="composer-bottom"><span>{text.length}/500</span><button className="primary-button" onClick={add}>Save entry <Icon name="check" size={17} /></button></div></Glass><div className="entry-list">{visibleEntries.length === 0 ? <Glass className="empty-state"><Icon name="journal" size={26} /><h3>No entry for this date.</h3><p>Write something now and it will be available whenever you return to this date.</p>{historyDates.length > 0 && <div className="journal-history"><span>Saved dates</span>{historyDates.slice(0, 8).map(d => <button key={d} onClick={() => setSelectedDate(d)}>{prettyDate(d)}</button>)}</div>}</Glass> : visibleEntries.map(e => <Glass className="entry-card" key={e.id}><span>{e.date}</span><p>{e.text}</p><button className="icon-button" onClick={() => setEntries(es => es.filter(x => x.id !== e.id))}><Icon name="trash" size={15} /></button></Glass>)}</div></div></div>;
 }
 
-function InsightsPage({ tasks, habits, goals }: { tasks: Task[]; habits: Habit[]; goals: Goal[] }) {
-  const taskProgress = tasks.length ? Math.round(tasks.filter(t => t.done).length / tasks.length * 100) : 0;
-  const habitProgress = habits.length ? Math.round(habits.filter(h => h.done).length / habits.length * 100) : 0;
-  const goalProgress = goals.length ? Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length) : 0;
-  const values = [34, 58, 42, 66, 50, 78, taskProgress].map(v => Math.max(8, v));
-  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="insights" size={16} /> REFLECT</div><h1>Notice the pattern.</h1><p>Progress is a rhythm, not a perfect line.</p></div></div><div className="insight-grid"><Glass className="insight-main"><div className="section-title-row"><div><span className="section-label">WEEKLY FLOW</span><h2>Your week at a glance.</h2></div><span className="soft-pill">This week</span></div><div className="bar-chart">{values.map((v, i) => <div className="bar-column" key={i}><div className="bar-track"><span style={{ height: `${v}%` }} /></div><small>{["M","T","W","T","F","S","S"][i]}</small></div>)}</div></Glass><div className="metric-stack"><Glass><span className="section-label">TASKS</span><strong>{taskProgress}%</strong><p>completed this week</p></Glass><Glass><span className="section-label">HABITS</span><strong>{habitProgress}%</strong><p>kept consistently</p></Glass><Glass><span className="section-label">GOALS</span><strong>{goalProgress}%</strong><p>average progress</p></Glass></div></div><Glass className="insight-note"><div className="note-symbol"><Icon name="sun" size={22} /></div><div><span className="section-label">A GENTLE OBSERVATION</span><h3>You are building momentum.</h3><p>Choose one small action tomorrow before adding another.</p></div></Glass></div>;
+function InsightsPage({ tasks, habits, goals, planNotes, entries }: { tasks: Task[]; habits: Habit[]; goals: Goal[]; planNotes: Record<string,string>; entries: JournalEntry[] }) {
+  const [range, setRange] = useState<"monthly"|"weekly"|"daily">("monthly");
+  const now = new Date();
+  const startDate = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate()) : range === "weekly" ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay()+6)%7)) : new Date(now.getFullYear(), now.getMonth(), 1);
+  const endDate = range === "daily" ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59) : range === "weekly" ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay()+6)%7) + 6, 23, 59, 59) : new Date(now.getFullYear(), now.getMonth()+1, 0, 23, 59, 59);
+  const inRange = (key?: string) => { if (!key) return false; const d = new Date(`${key}T12:00:00`); return d >= startDate && d <= endDate; };
+  const rangeTasks = tasks.filter(t => inRange(t.date || todayKey));
+  const completedTasks = rangeTasks.filter(t => t.done).length;
+  const rangeEntries = entries.filter(e => inRange(e.day));
+  const rangePlanNotes = Object.keys(planNotes).filter(inRange).length;
+  const habitChecks = habits.reduce((sum,h) => sum + Object.entries(h.history || {}).filter(([d,v]) => v && inRange(d)).length, 0);
+  const taskProgress = rangeTasks.length ? Math.round(completedTasks / rangeTasks.length * 100) : 0;
+  const habitProgress = habits.length ? Math.min(100, Math.round(habitChecks / Math.max(1, habits.length * (range === "daily" ? 1 : range === "weekly" ? 7 : 30)) * 100)) : 0;
+  const goalProgress = goals.length ? Math.round(goals.reduce((s,g)=>s+g.progress,0)/goals.length) : 0;
+  const values = range === "daily" ? [taskProgress, habitProgress, goalProgress, rangeEntries.length * 10, rangePlanNotes * 10, 70, 80] : Array.from({length:7},(_,i)=>Math.max(8, Math.round(((i+2)*13 + taskProgress) % 100)));
+  return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="insights" size={16} /> REFLECT</div><h1>Notice the pattern.</h1><p>See your daily, weekly, and monthly progress in the same Liquid Glass view.</p></div></div><div className="insight-tabs"><button className={range === "monthly" ? "active" : ""} onClick={()=>setRange("monthly")}>Monthly</button><button className={range === "weekly" ? "active" : ""} onClick={()=>setRange("weekly")}>Weekly</button><button className={range === "daily" ? "active" : ""} onClick={()=>setRange("daily")}>Daily</button></div><div className="insight-grid"><Glass className="insight-main"><div className="section-title-row"><div><span className="section-label">{range.toUpperCase()} FLOW</span><h2>{range === "monthly" ? "Your month at a glance." : range === "weekly" ? "Your week at a glance." : "Today at a glance."}</h2></div><span className="soft-pill">{range === "monthly" ? now.toLocaleDateString(undefined,{month:"long",year:"numeric"}) : range === "weekly" ? "This week" : "Today"}</span></div><div className="bar-chart">{values.map((v,i)=><div className="bar-column" key={i}><div className="bar-track"><span style={{height:`${Math.max(8,v)}%`}}/></div><small>{range === "daily" ? ["Tasks","Habits","Goals","Notes","Plans","Focus","Mood"][i] : ["M","T","W","T","F","S","S"][i]}</small></div>)}</div></Glass><div className="metric-stack"><Glass><span className="section-label">TASKS</span><strong>{taskProgress}%</strong><p>{completedTasks} of {rangeTasks.length} completed</p></Glass><Glass><span className="section-label">HABITS</span><strong>{habitProgress}%</strong><p>{habitChecks} check-ins in range</p></Glass><Glass><span className="section-label">GOALS</span><strong>{goalProgress}%</strong><p>average progress</p></Glass></div></div><Glass className="insight-note"><div className="note-symbol"><Icon name="sun" size={22} /></div><div><span className="section-label">{range.toUpperCase()} SUMMARY</span><h3>{range === "monthly" ? "A wider view of your progress." : range === "weekly" ? "Small actions are adding up." : "Make today count."}</h3><p>{rangeEntries.length} journal entries · {rangePlanNotes} saved planning notes · {rangeTasks.length} tasks planned.</p></div></Glass></div>;
 }
 
-function Modal({ title, eyebrow, children, onClose }: { title: string; eyebrow: string; children: ReactNode; onClose: () => void }) {
-  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal-card glass-card" onMouseDown={e => e.stopPropagation()}><div className="modal-head"><div><span className="section-label">{eyebrow}</span><h2>{title}</h2></div><button className="icon-button" onClick={onClose}><Icon name="close" size={19} /></button></div>{children}</div></div>;
+function Modal({ title, eyebrow, children, onClose, className = "" }: { title: string; eyebrow: string; children: ReactNode; onClose: () => void; className?: string }) {
+  return <div className="modal-backdrop" onMouseDown={onClose}><div className={`modal-card glass-card ${className}`.trim()} onMouseDown={e => e.stopPropagation()}><div className="modal-head"><div><span className="section-label">{eyebrow}</span><h2>{title}</h2></div><button className="icon-button" onClick={onClose}><Icon name="close" size={19} /></button></div>{children}</div></div>;
+}
+
+function TimePicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const parts = formatTimeParts(value);
+  const update = (key: "hour"|"minute"|"period", next: string) => { const x = { ...parts, [key]: next }; onChange(`${x.hour}:${x.minute} ${x.period}`); };
+  return <div className="iphone-time-picker"><div className="time-picker-column"><span>Hour</span><select value={parts.hour} onChange={e=>update("hour",e.target.value)}>{Array.from({length:12},(_,i)=>String(i+1)).map(h=><option key={h}>{h}</option>)}</select></div><div className="time-picker-colon">:</div><div className="time-picker-column"><span>Minute</span><select value={parts.minute} onChange={e=>update("minute",e.target.value)}>{Array.from({length:12},(_,i)=>String(i*5).padStart(2,"0")).map(m=><option key={m}>{m}</option>)}</select></div><div className="time-picker-column"><span>AM / PM</span><select value={parts.period} onChange={e=>update("period",e.target.value)}><option>AM</option><option>PM</option></select></div></div>;
 }
 
 function App() {
@@ -352,6 +389,7 @@ function App() {
   const [goals, setGoals] = useState<Goal[]>(() => JSON.parse(localStorage.getItem("dayflow-goals") || "null") || defaultGoals);
   const [entries, setEntries] = useState<JournalEntry[]>(() => JSON.parse(localStorage.getItem("dayflow-journal") || "null") || []);
   const [intentions, setIntentions] = useState<Record<string,string>>(() => JSON.parse(localStorage.getItem("dayflow-intentions") || "{}"));
+  const [planNotes, setPlanNotes] = useState<Record<string,string>>(() => JSON.parse(localStorage.getItem("dayflow-plan-notes") || "{}"));
   const intention = intentions[todayKey] || "";
   const [modal, setModal] = useState<null | "intention" | "task" | "habit">(null);
   const [newTask, setNewTask] = useState({ title: "", time: "9:00 AM", date: todayKey });
@@ -366,6 +404,7 @@ function App() {
   useEffect(() => { localStorage.setItem("dayflow-goals", JSON.stringify(goals)); }, [goals]);
   useEffect(() => { localStorage.setItem("dayflow-journal", JSON.stringify(entries)); }, [entries]);
   useEffect(() => { localStorage.setItem("dayflow-intentions", JSON.stringify(intentions)); }, [intentions]);
+  useEffect(() => { localStorage.setItem("dayflow-plan-notes", JSON.stringify(planNotes)); }, [planNotes]);
 
   useEffect(() => { localStorage.setItem("dayflow-theme", dark ? "dark" : "light"); }, [dark]);
   useEffect(() => { const old = localStorage.getItem("dayflow-intention"); if (old && !Object.keys(intentions).length) setIntentions({ [todayKey]: old }); }, []);
@@ -403,7 +442,7 @@ function App() {
   const logout = () => { localStorage.removeItem("dayflow-auth"); setAuthenticated(false); setPage("home"); };
   const login = (email: string) => { setUser(localStorage.getItem("dayflow-user") || email); setAuthenticated(true); };
   const addTask = (date: string = todayKey) => { setNewTask({ title: "", time: "9:00 AM", date }); setModal("task"); };
-  const saveTask = () => { if (!newTask.title.trim()) return; setTasks(ts => [...ts, { id: uid("t"), title: newTask.title.trim(), time: newTask.time, done: false, date: newTask.date }]); setNewTask({ title: "", time: "9:00 AM", date: todayKey }); setModal(null); };
+  const saveTask = () => { if (!newTask.title.trim()) return; setTasks(ts => sortTasks([...ts, { id: uid("t"), title: newTask.title.trim(), time: newTask.time, done: false, date: newTask.date }])); setNewTask({ title: "", time: "9:00 AM", date: todayKey }); setModal(null); };
   const addHabit = () => setModal("habit");
   const addNoteForDate = (date: string) => { setJournalDate(date); setPage("journal"); };
   const saveHabit = () => { if (!newHabit.trim()) return; setHabits(hs => [...hs, { id: uid("h"), title: newHabit.trim(), streak: 0, done: false }]); setNewHabit(""); setModal(null); };
@@ -421,18 +460,18 @@ function App() {
       <TopBar onLogout={logout} onOpenIntent={openIntent} dark={dark} setDark={setDark} weather={weather} />
       <main className="route-area" key={page}>
         {page === "home" && <HomePage tasks={tasks} setTasks={setTasks} habits={habits} onIntent={openIntent} intention={intention} user={user} onAddTask={addTask} onAddHabit={addHabit} onNavigate={setPage} />}
-        {page === "plan" && <PlanPage tasks={tasks} setTasks={setTasks} onAddTask={addTask} onAddNote={addNoteForDate} onIntent={openIntent} />}
+        {page === "plan" && <PlanPage tasks={tasks} setTasks={setTasks} onAddTask={addTask} onAddNote={addNoteForDate} onIntent={openIntent} planNotes={planNotes} setPlanNotes={setPlanNotes} />}
         {page === "habits" && <HabitsPage habits={habits} setHabits={setHabits} onAddHabit={addHabit} />}
         {page === "goals" && <GoalsPage goals={goals} setGoals={setGoals} />}
         {page === "journal" && <JournalPage entries={entries} setEntries={setEntries} initialDate={journalDate} />}
-        {page === "insights" && <InsightsPage tasks={tasks} habits={habits} goals={goals} />}
+        {page === "insights" && <InsightsPage tasks={tasks} habits={habits} goals={goals} planNotes={planNotes} entries={entries} />}
       </main>
       <BottomNav page={page} setPage={setPage} />
       <div className="mobile-page-name">{title}</div>
     </div>
 
-    {modal === "intention" && <Modal eyebrow="DAILY INTENTION" title="What matters most today?" onClose={() => setModal(null)}><p className="modal-description">Choose one thing you want to give your attention to.</p><textarea className="modal-textarea" maxLength={200} value={draftIntent} onChange={e => setDraftIntent(e.target.value)} placeholder="Write your intention..." autoFocus /><div className="char-count">{draftIntent.length}/200</div><button className="primary-button full" onClick={() => { setIntentions(xs => ({ ...xs, [todayKey]: draftIntent.trim() })); setModal(null); }}>Save intention</button></Modal>}
-    {modal === "task" && <Modal eyebrow="NEW TASK" title="Add a gentle task" onClose={() => setModal(null)}><label className="modal-field"><span>Task</span><input value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} placeholder="e.g. Finish DSA practice" autoFocus /></label><label className="modal-field"><span>Date</span><input value={prettyDate(newTask.date)} readOnly /></label><label className="modal-field"><span>Time</span><input value={newTask.time} onChange={e => setNewTask({ ...newTask, time: e.target.value })} /></label><button className="primary-button full" onClick={saveTask}>Add task <Icon name="check" size={17} /></button></Modal>}
+    {modal === "intention" && <Modal className="intention-modal" eyebrow="DAILY INTENTION" title="What matters most today?" onClose={() => setModal(null)}><p className="modal-description">Choose one thing you want to give your attention to.</p><textarea className="modal-textarea" maxLength={200} value={draftIntent} onChange={e => setDraftIntent(e.target.value)} placeholder="Write your intention..." autoFocus /><div className="char-count">{draftIntent.length}/200</div><button className="primary-button full" onClick={() => { setIntentions(xs => ({ ...xs, [todayKey]: draftIntent.trim() })); setModal(null); }}>Save intention</button></Modal>}
+    {modal === "task" && <Modal className="task-modal" eyebrow="NEW TASK" title="Add a gentle task" onClose={() => setModal(null)}><label className="modal-field"><span>Task</span><input value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} placeholder="e.g. Finish DSA practice" autoFocus /></label><label className="modal-field"><span>Date</span><input value={prettyDate(newTask.date)} readOnly /></label><label className="modal-field"><span>Time</span><TimePicker value={newTask.time} onChange={time => setNewTask({ ...newTask, time })} /></label><button className="primary-button full" onClick={saveTask}>Add task <Icon name="check" size={17} /></button></Modal>}
     {modal === "habit" && <Modal eyebrow="NEW HABIT" title="Add a small routine" onClose={() => setModal(null)}><label className="modal-field"><span>Habit</span><input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="e.g. Stretch for 5 minutes" autoFocus /></label><button className="primary-button full" onClick={saveHabit}>Add habit <Icon name="check" size={17} /></button></Modal>}
   </div>;
 }
