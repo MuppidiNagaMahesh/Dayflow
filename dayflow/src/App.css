@@ -818,109 +818,267 @@ button:focus:not(:focus-visible) { outline:none; }
 .timer-ring-value { stroke:var(--accent); }
 
 /* =========================================================
-   DAYFLOW V2.1 — FINAL UX POLISH
+   DAYFLOW — VERSION 1 BLUE / CLOCK 01 VISUAL SKIN
+   Matches the supplied iPhone Liquid Glass reference while
+   keeping all existing pages and functionality intact.
    ========================================================= */
 
-/* Daily intention: clearer in both themes, but still frosted Liquid Glass. */
-.intention-modal {
+:root {
+  --dayflow-blue: #1677ff;
+  --dayflow-blue-2: #5aa8ff;
+  --dayflow-ink: #102c56;
+  --dayflow-soft: #52739e;
+}
+
+/* Calm blue-only atmosphere: no pink cast. */
+.app-shell,
+.auth-shell {
+  background:
+    radial-gradient(circle at 78% 12%, rgba(232,245,255,.92), transparent 24%),
+    radial-gradient(circle at 15% 74%, rgba(91,170,255,.42), transparent 34%),
+    linear-gradient(145deg, #8ed0ff 0%, #68aef0 38%, #86c8f7 67%, #4b88ce 100%) !important;
+}
+
+.static-weather-scene {
+  background:
+    linear-gradient(180deg, rgba(235,248,255,.62) 0%, rgba(120,190,247,.30) 42%, rgba(42,103,170,.34) 100%),
+    linear-gradient(145deg, #77bff7 0%, #5f9edb 48%, #3c75b4 100%) !important;
+}
+.static-weather-scene::before {
+  background:
+    radial-gradient(circle at 76% 16%, rgba(255,249,218,.86), transparent 12%),
+    radial-gradient(circle at 22% 62%, rgba(164,218,255,.34), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,.20), rgba(20,65,116,.10)) !important;
+}
+.scene-glow {
+  background: radial-gradient(circle, rgba(255,250,221,.92) 0 17%, rgba(255,229,176,.28) 35%, transparent 72%) !important;
+}
+.scene-mountain.back { background: linear-gradient(180deg, rgba(89,145,198,.44), rgba(49,91,137,.34)) !important; }
+.scene-mountain.front { background: linear-gradient(180deg, rgba(35,83,130,.48), rgba(18,52,92,.70)) !important; }
+.weather-rain .static-weather-scene,
+.weather-cloud .static-weather-scene,
+.weather-night .static-weather-scene {
+  background:
+    linear-gradient(180deg, rgba(203,232,255,.44), rgba(74,132,194,.38) 50%, rgba(25,66,113,.64)),
+    linear-gradient(145deg, #6fb1e9, #477eb9) !important;
+}
+.theme-dark .static-weather-scene {
+  background: linear-gradient(145deg, #0d2c55 0%, #17477b 45%, #102f58 100%) !important;
+}
+.theme-dark .static-weather-scene::before {
+  background: radial-gradient(circle at 78% 16%, rgba(174,218,255,.22), transparent 12%), linear-gradient(180deg, rgba(8,26,50,.02), rgba(3,13,29,.42)) !important;
+}
+
+/* Shared glass: brighter, thinner and more iOS-like. */
+.glass-card,
+.sidebar-inner,
+.today-pill,
+.weather-pill,
+.theme-button,
+.bottom-nav {
+  border: 1px solid rgba(255,255,255,.55) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.38), rgba(220,239,255,.17)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -1px 0 rgba(40,102,165,.08),
+    0 20px 55px rgba(20,73,130,.17) !important;
+  backdrop-filter: blur(28px) saturate(155%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(155%) !important;
+}
+.glass-card::before,
+.sidebar-inner::before,
+.bottom-nav::before {
+  background: linear-gradient(125deg, rgba(255,255,255,.26), transparent 34%, transparent 70%, rgba(255,255,255,.10)) !important;
+}
+
+/* Header and sidebar feel like floating glass controls. */
+.sidebar { padding: 18px 14px; }
+.sidebar-inner { border-radius: 30px; padding: 18px 15px; }
+.sidebar-brand { margin-bottom: 28px; }
+.nav-item { min-height: 44px; border-radius: 15px; color: rgba(255,255,255,.82) !important; }
+.nav-item.active { background: rgba(255,255,255,.28) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 8px 22px rgba(34,100,168,.10); }
+.nav-item:hover { background: rgba(255,255,255,.18); }
+.topbar { height: 82px; padding: 16px 34px; }
+.today-pill { min-width: 190px; }
+.weather-pill { background: rgba(255,255,255,.28) !important; }
+.theme-button { background: rgba(255,255,255,.30) !important; }
+
+/* Home reference: clean hero + compact glass tools. */
+.hero-row { align-items: center; }
+.hero-row h1, .page-header h1 { font-size: clamp(36px, 4.4vw, 54px); letter-spacing: -.06em; }
+.hero-row p, .page-header p { color: rgba(246,251,255,.82) !important; }
+.hero-tools { display:flex; align-items:center; gap:10px; }
+.streak-card { min-width:132px; padding:11px 13px; display:flex; align-items:center; gap:9px; }
+.streak-icon { width:34px; height:34px; display:grid; place-items:center; border-radius:12px; background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.34); }
+.streak-card small, .streak-card strong { display:block; }
+.streak-card small { font-size:8px; letter-spacing:.12em; font-weight:800; color:rgba(255,255,255,.72); }
+.streak-card strong { margin-top:2px; font-size:14px; }
+
+/* Home cards: more breathing room and stronger blue glass. */
+.dashboard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap:15px; }
+.focus-card, .progress-card, .focus-timer-card { min-height:280px; }
+.focus-card { background: linear-gradient(145deg, rgba(31,115,220,.38), rgba(255,255,255,.18)) !important; }
+.progress-card { background: linear-gradient(145deg, rgba(255,255,255,.40), rgba(183,222,255,.17)) !important; }
+.focus-timer-card { background: linear-gradient(145deg, rgba(240,249,255,.44), rgba(111,179,255,.19)) !important; }
+.focus-card h2 { font-size:29px; line-height:1.06; margin-top:24px; }
+.progress-layout { gap:18px; }
+.stat-card { min-height:145px; }
+.quote-card, .intention-card { min-height:180px; }
+.intention-card { background: linear-gradient(145deg, rgba(255,255,255,.43), rgba(112,181,255,.19)) !important; }
+.today-list { margin-top:2px; }
+.reminder-day { font-size:8px; font-weight:800; color:rgba(255,255,255,.62); letter-spacing:.12em; }
+.quote-card p { font-size:17px; line-height:1.45; }
+
+/* Clock Version 1 — actual clock face rather than a generic progress circle. */
+.clock-face-wrap { display:grid; place-items:center; padding:7px 0 4px; }
+.clock-face {
   position:relative;
-  overflow:hidden;
-  background:linear-gradient(145deg, rgba(255,255,255,.30), rgba(255,255,255,.12)) !important;
-  border:1px solid rgba(255,255,255,.42) !important;
-  box-shadow:0 30px 90px rgba(20,48,92,.28), inset 0 1px 0 rgba(255,255,255,.38) !important;
-  backdrop-filter:blur(32px) saturate(155%) !important;
-  -webkit-backdrop-filter:blur(32px) saturate(155%) !important;
+  width:178px;
+  height:178px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 42% 34%, rgba(255,255,255,.95), rgba(240,249,255,.82) 52%, rgba(188,222,255,.54) 100%);
+  border: 5px solid rgba(255,255,255,.72);
+  box-shadow:
+    0 18px 42px rgba(24,101,183,.22),
+    inset 0 0 0 1px rgba(83,153,225,.18),
+    inset 0 0 28px rgba(83,160,240,.16);
 }
-.intention-modal::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:radial-gradient(circle at 85% 10%, rgba(125,181,255,.20), transparent 35%), linear-gradient(135deg, rgba(255,255,255,.08), transparent 55%);
-}
-.intention-modal > * { position:relative; z-index:1; }
-.app-shell.theme-light .intention-modal {
-  background:linear-gradient(145deg, rgba(255,255,255,.78), rgba(231,241,255,.58)) !important;
-  border-color:rgba(255,255,255,.86) !important;
-  box-shadow:0 30px 90px rgba(39,69,110,.22), inset 0 1px 0 rgba(255,255,255,.95) !important;
-}
-.app-shell.theme-light .intention-modal .modal-textarea {
-  background:rgba(255,255,255,.82) !important;
-  color:#14243b !important;
-  border-color:rgba(54,82,120,.20) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.90), 0 8px 25px rgba(54,82,120,.07);
-}
-.app-shell.theme-light .intention-modal .modal-textarea:focus {
-  border-color:rgba(83,137,235,.50) !important;
-  box-shadow:0 0 0 3px rgba(83,137,235,.10), inset 0 1px 0 rgba(255,255,255,.90);
-}
-.app-shell.theme-dark .intention-modal {
-  background:linear-gradient(145deg, rgba(35,60,96,.52), rgba(255,255,255,.10)) !important;
-}
-.app-shell.theme-dark .intention-modal h2,
-.app-shell.theme-dark .intention-modal .section-label { color:#fff !important; }
-.app-shell.theme-dark .intention-modal .modal-description,
-.app-shell.theme-dark .intention-modal .char-count { color:rgba(255,255,255,.70) !important; }
-.app-shell.theme-dark .intention-modal .modal-textarea {
-  background:rgba(8,22,43,.28) !important;
-  color:#fff !important;
-  border-color:rgba(255,255,255,.25) !important;
-}
+.clock-glow { position:absolute; inset:10px; border-radius:50%; box-shadow:0 0 28px rgba(52,143,255,.18); pointer-events:none; }
+.clock-ticks { position:absolute; inset:12px; border-radius:50%; }
+.clock-tick { position:absolute; left:50%; top:5px; width:2px; height:8px; margin-left:-1px; transform-origin:50% 78px; border-radius:99px; background:rgba(34,99,171,.48); }
+.clock-tick.major { width:3px; height:12px; margin-left:-1.5px; background:#2c6eb5; }
+.clock-hand { position:absolute; left:50%; top:50%; width:3px; height:57px; border-radius:99px; transform-origin:50% 100%; background:linear-gradient(#126eff,#70b8ff); box-shadow:0 3px 10px rgba(22,119,255,.28); transition:transform .25s linear; }
+.clock-pin { position:absolute; left:50%; top:50%; width:12px; height:12px; transform:translate(-50%,-50%); border-radius:50%; background:#166ee0; border:3px solid rgba(255,255,255,.92); box-shadow:0 3px 9px rgba(22,110,224,.25); }
+.focus-timer-card .timer-center { color:#0d3a73; }
+.focus-timer-card .timer-center strong { font-size:25px; color:#0d3670 !important; letter-spacing:-.05em; }
+.focus-timer-card .timer-center span { color:#52739e !important; }
+.timer-controls { margin-top:6px; }
+.timer-circle { background:rgba(255,255,255,.48) !important; border-color:rgba(64,125,189,.18) !important; color:#174a82 !important; box-shadow:0 6px 15px rgba(33,102,173,.08); }
+.timer-play { width:50px; height:50px; background:linear-gradient(135deg, #0d74ff, #5baaff) !important; box-shadow:0 12px 25px rgba(18,111,239,.28); }
+.timer-presets { margin-top:11px; background:rgba(255,255,255,.28) !important; border-color:rgba(255,255,255,.46) !important; }
+.timer-presets button { flex:1; min-width:0; border:0; background:transparent; color:#52739e; padding:7px 5px; border-radius:10px; font-size:9px; font-weight:800; }
+.timer-presets button small { display:block; margin-top:2px; font-size:7px; opacity:.72; }
+.timer-presets button.active { background:rgba(255,255,255,.78); color:#0f56a4; box-shadow:0 4px 13px rgba(39,106,177,.10), inset 0 1px 0 #fff; }
 
-/* Timer controls are real buttons, not decorative labels. */
-.timer-presets button {
-  flex:1;
-  min-width:0;
-  border:0;
-  padding:7px 4px;
-  border-radius:9px;
-  background:transparent;
-  color:var(--ui-muted);
-  cursor:pointer;
-  font-size:8px;
-  font-weight:700;
-}
-.timer-presets button.active {
-  color:var(--ui-text);
-  background:rgba(255,255,255,.20);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
-}
-.app-shell.theme-light .timer-presets button.active {
-  background:rgba(255,255,255,.76);
-  color:#14243b;
-}
-.timer-circle span { white-space:nowrap; }
+/* Planner — no monthly calendar, only a soft date strip. */
+.planner-grid { grid-template-columns: minmax(0,1.35fr) minmax(300px,.72fr); }
+.date-strip-navigator { padding:6px; border-radius:21px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.34); box-shadow:inset 0 1px 0 rgba(255,255,255,.36); }
+.date-strip-navigator > button:not(.date-nav-button) { min-height:62px; border-radius:16px; background:transparent; color:#fff; border:1px solid transparent; }
+.date-strip-navigator > button:not(.date-nav-button) span { font-size:9px; opacity:.75; }
+.date-strip-navigator > button:not(.date-nav-button) strong { font-size:18px; }
+.date-strip-navigator > button.active { background:rgba(255,255,255,.78) !important; color:#123a6d !important; border-color:rgba(255,255,255,.92); box-shadow:0 8px 18px rgba(26,92,157,.13); }
+.date-nav-button { background:rgba(255,255,255,.28) !important; border-color:rgba(255,255,255,.44) !important; color:#fff !important; }
+.day-note-card { background:linear-gradient(145deg, rgba(255,255,255,.42), rgba(157,211,255,.18)) !important; }
+.quick-card, .tip-card, .plan-stats { background:linear-gradient(145deg, rgba(255,255,255,.36), rgba(151,207,255,.15)) !important; }
 
-/* Planner date strip: clean replacement for the removed monthly calendar. */
-.date-strip-navigator {
-  background:transparent;
-  border:0;
-  box-shadow:none;
-  padding-left:0;
-  padding-right:0;
-}
+/* Goals / Insights use the same soft blue glass language. */
+.goal-type-summary .glass-card,
+.goal-card,
+.insight-main,
+.metric-stack .glass-card,
+.insight-note { background:linear-gradient(145deg, rgba(255,255,255,.40), rgba(135,197,255,.15)) !important; }
+.goal-term.short { background:rgba(26,119,255,.14) !important; color:#0865d4 !important; }
+.goal-term.long { background:rgba(67,163,255,.15) !important; color:#1671c8 !important; }
+.insight-tabs { background:rgba(255,255,255,.28) !important; border-color:rgba(255,255,255,.45) !important; }
+.insight-tabs button { color:#55749b !important; }
+.insight-tabs button.active { color:#0d4d98 !important; background:rgba(255,255,255,.80) !important; }
 
-/* Goal cards make the short/long distinction obvious. */
-.goal-type-summary .glass-card {
-  background:linear-gradient(145deg, rgba(255,255,255,.20), rgba(255,255,255,.08));
+/* Modal reference: bright frosted iPhone sheet. */
+.modal-backdrop { background:rgba(10,45,85,.30) !important; }
+.modal-card {
+  width:min(500px, calc(100vw - 30px));
+  border-radius:30px !important;
+  padding:26px !important;
+  background:linear-gradient(145deg, rgba(241,249,255,.90), rgba(219,239,255,.72)) !important;
+  border:1px solid rgba(255,255,255,.92) !important;
+  box-shadow:0 35px 90px rgba(16,64,112,.30), inset 0 1px 0 rgba(255,255,255,.95) !important;
 }
-.app-shell.theme-light .goal-type-summary .glass-card {
-  background:linear-gradient(145deg, rgba(255,255,255,.70), rgba(231,241,255,.44));
+.modal-card h2 { color:#12396b !important; font-size:27px !important; }
+.modal-card .section-label { color:#47709d !important; }
+.modal-card .modal-description { color:#4f6c8f !important; }
+.modal-card .modal-textarea,
+.modal-card .modal-field input,
+.modal-card .modal-field select,
+.modal-card .iphone-time-picker {
+  background:rgba(255,255,255,.70) !important;
+  border-color:rgba(69,125,180,.18) !important;
+  color:#173d6c !important;
 }
+.modal-card .modal-textarea { min-height:170px; border-radius:19px; padding:15px; }
+.modal-card .modal-field > span { color:#4b6d93 !important; }
 
-/* Insights stay glassy on all screen sizes. */
-.insight-main, .metric-stack > .glass-card, .insight-note, .insight-tabs {
-  backdrop-filter:blur(24px) saturate(145%);
-  -webkit-backdrop-filter:blur(24px) saturate(145%);
-}
+/* iPhone-like time controls: larger, rounded, easy to use. */
+.iphone-time-picker { border-radius:20px !important; padding:10px !important; }
+.time-picker-column select { height:50px !important; border-radius:15px !important; background:rgba(241,248,255,.92) !important; color:#153b69 !important; font-size:15px; }
+.time-picker-colon { height:50px; color:#4e7198; }
 
-@media (max-width:700px) {
-  .intention-modal {
-    border-radius:24px !important;
-    padding:20px !important;
-  }
-  .intention-modal .modal-head h2 { font-size:22px; }
-  .intention-modal .modal-textarea { min-height:155px; }
-  .timer-presets button { font-size:7px; padding:8px 3px; }
+/* Mobile iPhone composition. */
+@media (max-width:1100px) {
+  .dashboard-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .focus-card { grid-column:span 2; }
+  .hero-tools { flex-wrap:wrap; justify-content:flex-end; }
+}
+@media (max-width:820px) {
+  .topbar { height:72px; padding:12px 16px; }
+  .topbar-actions { gap:6px; }
+  .today-pill { min-width:0; width:132px; min-height:40px; padding:6px 9px; }
+  .today-label { font-size:7px; }
+  .today-pill strong { font-size:9px; }
+  .hero-row { align-items:flex-start; flex-direction:column; }
+  .hero-tools { width:100%; justify-content:flex-start; }
+  .streak-card { min-width:125px; }
+  .dashboard-grid { grid-template-columns:1fr; }
+  .focus-card { grid-column:auto; }
+  .focus-card, .progress-card, .focus-timer-card { min-height:250px; }
+  .clock-face { width:165px; height:165px; }
+  .clock-tick { transform-origin:50% 72px; }
+  .planner-grid { grid-template-columns:1fr; }
+  .date-strip-navigator > button:not(.date-nav-button) { min-width:60px; }
+  .modal-card { border-radius:27px !important; }
+}
+@media (max-width:560px) {
+  .route-area { padding:14px 12px 92px; }
+  .hero-row h1, .page-header h1 { font-size:34px; }
+  .hero-tools { gap:7px; }
+  .streak-card { flex:1; min-width:0; }
+  .time-card { min-width:0 !important; flex:1; }
+  .dashboard-grid { gap:11px; }
+  .glass-card { border-radius:22px; }
+  .focus-card h2 { font-size:26px; }
+  .today-list .section-title-row { align-items:flex-start; }
+  .date-strip-navigator { overflow-x:auto; }
   .date-strip-navigator > button:not(.date-nav-button) { min-width:58px; }
+  .bottom-nav { left:8px !important; right:8px !important; bottom:8px !important; border-radius:24px !important; }
+  .bottom-nav button { min-height:52px !important; }
+  .modal-card { width:calc(100vw - 20px); padding:21px !important; }
 }
+
+/* Dark mode: retain the same blue glass identity, just deeper. */
+.app-shell.theme-dark .glass-card,
+.app-shell.theme-dark .sidebar-inner,
+.app-shell.theme-dark .today-pill,
+.app-shell.theme-dark .weather-pill,
+.app-shell.theme-dark .theme-button,
+.app-shell.theme-dark .bottom-nav {
+  background:linear-gradient(145deg, rgba(33,89,150,.34), rgba(6,27,54,.38)) !important;
+  border-color:rgba(174,218,255,.24) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 22px 60px rgba(0,0,0,.25) !important;
+}
+.app-shell.theme-dark .focus-card { background:linear-gradient(145deg, rgba(18,105,218,.42), rgba(15,50,87,.34)) !important; }
+.app-shell.theme-dark .clock-face { background:radial-gradient(circle at 42% 32%, rgba(224,242,255,.98), rgba(183,217,249,.90) 55%, rgba(93,148,202,.70)); }
+.app-shell.theme-dark .clock-hand { background:linear-gradient(#0c69ef,#69b7ff); }
+.app-shell.theme-dark .clock-pin { background:#0d65d6; }
+.app-shell.theme-dark .focus-timer-card .timer-center strong { color:#103b70 !important; }
+.app-shell.theme-dark .modal-card { background:linear-gradient(145deg, rgba(25,55,88,.94), rgba(15,38,68,.90)) !important; border-color:rgba(170,215,255,.28) !important; }
+.app-shell.theme-dark .modal-card h2 { color:#eef8ff !important; }
+.app-shell.theme-dark .modal-card .section-label,
+.app-shell.theme-dark .modal-card .modal-description,
+.app-shell.theme-dark .modal-card .modal-field > span { color:#b8d4ef !important; }
+.app-shell.theme-dark .modal-card .modal-textarea,
+.app-shell.theme-dark .modal-card .modal-field input,
+.app-shell.theme-dark .modal-card .modal-field select,
+.app-shell.theme-dark .modal-card .iphone-time-picker { background:rgba(5,23,43,.48) !important; color:#f5fbff !important; border-color:rgba(177,218,255,.20) !important; }
+
+/* Remove old hidden calendar even if old markup/classes remain in cached builds. */
+.planner-calendar { display:none !important; }
