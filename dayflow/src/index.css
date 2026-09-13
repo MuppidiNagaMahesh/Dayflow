@@ -39,3 +39,20 @@ button {
   width: 100%;
   min-height: 100vh;
 }
+
+
+/* Global iOS-like rendering foundation */
+html, body { background: #7ea9d8; }
+body { overflow-x: hidden; }
+input, textarea, select { -webkit-appearance: none; appearance: none; }
+input[type="checkbox"] { -webkit-appearance: auto; appearance: auto; }
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+::selection { background: rgba(94,158,255,.30); }
+
+
+/* DayFlow global iOS 26 rendering */
+html, body, #root { min-height:100%; }
+body { background:#7ea9d8; }
+* { -webkit-tap-highlight-color:transparent; }
+button, input, textarea, select { font-family:Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
+::selection { background:rgba(22,119,255,.22); }

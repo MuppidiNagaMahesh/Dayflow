@@ -1082,3 +1082,1427 @@ button:focus:not(:focus-visible) { outline:none; }
 
 /* Remove old hidden calendar even if old markup/classes remain in cached builds. */
 .planner-calendar { display:none !important; }
+
+
+/* =========================================================
+   DayFlow — iOS 26 Blue Liquid Glass refinement
+   Stronger glass, clearer light mode, readable forms/modals,
+   and user-controlled timer duration.
+   ========================================================= */
+
+.app-shell,
+.auth-shell {
+  --blue-900: #12325f;
+  --blue-800: #214c86;
+  --blue-700: #2f66ad;
+  --blue-500: #5e9eff;
+}
+
+/* Stronger iOS-style glass surfaces */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.34), rgba(255,255,255,.13) 55%, rgba(255,255,255,.22));
+  border: 1px solid rgba(255,255,255,.48);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.68),
+    inset 0 -1px 0 rgba(255,255,255,.10),
+    0 18px 55px rgba(22,61,112,.17);
+  backdrop-filter: blur(34px) saturate(155%);
+  -webkit-backdrop-filter: blur(34px) saturate(155%);
+}
+
+.sidebar-inner,
+.topbar .today-pill,
+.topbar .weather-pill,
+.mobile-nav,
+.date-strip,
+.insight-tabs,
+.goal-type-summary .glass-card,
+.day-note-card,
+.focus-timer-card {
+  backdrop-filter: blur(34px) saturate(160%);
+  -webkit-backdrop-filter: blur(34px) saturate(160%);
+}
+
+/* Clean blue atmospheric background */
+.static-weather-scene {
+  background:
+    radial-gradient(circle at 20% 12%, rgba(255,255,255,.30), transparent 25%),
+    radial-gradient(circle at 82% 30%, rgba(102,180,255,.25), transparent 28%),
+    linear-gradient(145deg, #8ebce9 0%, #668fca 43%, #8aaed7 72%, #b7d5ee 100%);
+}
+
+/* ---------- Light mode: dark readable iOS typography ---------- */
+.app-shell.theme-light {
+  --ui-text: #10294d;
+  --ui-muted: #385579;
+  --ui-faint: #58708f;
+  --glass-bg: rgba(255,255,255,.40);
+  --glass-bg-strong: rgba(255,255,255,.56);
+  --glass-line: rgba(255,255,255,.72);
+  --glass-line-soft: rgba(30,74,125,.16);
+  --ui-shadow: 0 22px 60px rgba(38,79,126,.18);
+  color: #10294d;
+}
+
+.theme-light .sidebar-inner {
+  background: linear-gradient(150deg, rgba(255,255,255,.54), rgba(224,240,255,.30));
+  border-color: rgba(255,255,255,.76);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.90), 0 20px 55px rgba(40,77,120,.14);
+}
+.theme-light .nav-item { color: #466486; }
+.theme-light .nav-item:hover,
+.theme-light .nav-item.active { color: #10294d; background: rgba(255,255,255,.48); }
+.theme-light .sidebar-bottom,
+.theme-light .topbar,
+.theme-light .page-content { color: #10294d; }
+.theme-light .section-label,
+.theme-light .eyebrow { color: #466486; }
+.theme-light h1,
+.theme-light h2,
+.theme-light h3,
+.theme-light strong,
+.theme-light p,
+.theme-light span,
+.theme-light small,
+.theme-light .task-title,
+.theme-light .task-time,
+.theme-light .habit-name,
+.theme-light .goal-card h2,
+.theme-light .entry-card p { color: inherit; }
+.theme-light .muted,
+.theme-light .task-time,
+.theme-light .goal-due,
+.theme-light .quote-card p,
+.theme-light .intention-card p { color: #4c6888; }
+
+/* More obvious glass depth without making light mode white-on-white */
+.theme-light .glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.58), rgba(231,243,255,.34) 55%, rgba(255,255,255,.45));
+  border-color: rgba(255,255,255,.78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 18px 50px rgba(38,78,126,.15);
+}
+.theme-light .primary-button { color: #fff !important; }
+.theme-light .secondary-button,
+.theme-light .icon-button,
+.theme-light .soft-pill,
+.theme-light .date-nav-button { color: #17365e; }
+.theme-light .soft-pill,
+.theme-light .date-nav-button,
+.theme-light .icon-button { background: rgba(255,255,255,.46); border-color: rgba(255,255,255,.70); }
+
+/* ---------- Data-entry state: background gets visibly blurred ---------- */
+.modal-backdrop {
+  background: rgba(8,28,58,.40) !important;
+  backdrop-filter: blur(24px) saturate(135%) brightness(.86) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(135%) brightness(.86) !important;
+}
+.modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, rgba(104,171,255,.16), transparent 45%);
+  pointer-events: none;
+}
+.modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(560px, calc(100vw - 28px));
+  border-radius: 30px !important;
+  padding: 30px !important;
+  background: linear-gradient(145deg, rgba(232,244,255,.88), rgba(255,255,255,.68)) !important;
+  border: 1px solid rgba(255,255,255,.90) !important;
+  box-shadow: 0 32px 90px rgba(5,30,65,.32), inset 0 1px 0 rgba(255,255,255,.96) !important;
+  backdrop-filter: blur(38px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(38px) saturate(165%) !important;
+}
+.modal-card h2 { color: #10294d !important; }
+.modal-card .section-label,
+.modal-card .modal-field > span { color: #355578 !important; }
+.modal-card .modal-description { color: #4b6786 !important; }
+.modal-card .modal-textarea,
+.modal-card .modal-field input,
+.modal-card .modal-field select,
+.modal-card .iphone-time-picker {
+  color: #10294d !important;
+  background: rgba(255,255,255,.72) !important;
+  border-color: rgba(54,91,131,.20) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.90);
+}
+.modal-card .modal-textarea::placeholder,
+.modal-card .modal-field input::placeholder { color: #7890aa !important; }
+.modal-card .icon-button { color: #17365e !important; }
+
+/* ---------- Authentication page: readable, premium glass ---------- */
+.auth-shell {
+  color: #fff;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.28), transparent 24%),
+    radial-gradient(circle at 82% 20%, rgba(93,160,255,.30), transparent 28%),
+    linear-gradient(145deg, #5f8fc7 0%, #416fa9 48%, #789fce 100%);
+}
+.auth-layout { position: relative; z-index: 2; }
+.auth-brand-panel { color: #fff; }
+.auth-brand-panel .auth-copy h1,
+.auth-brand-panel .auth-copy h1 span { color: #fff; }
+.auth-brand-panel .auth-copy p,
+.auth-brand-panel .eyebrow { color: rgba(255,255,255,.86); }
+.auth-mini { background: rgba(255,255,255,.22) !important; border-color: rgba(255,255,255,.48) !important; }
+.auth-card {
+  color: #112b4e !important;
+  background: linear-gradient(145deg, rgba(246,251,255,.91), rgba(222,239,255,.72)) !important;
+  border: 1px solid rgba(255,255,255,.92) !important;
+  box-shadow: 0 30px 90px rgba(16,45,82,.28), inset 0 1px 0 rgba(255,255,255,.98) !important;
+  backdrop-filter: blur(38px) saturate(155%);
+  -webkit-backdrop-filter: blur(38px) saturate(155%);
+}
+.auth-card h2 { color: #10294d !important; }
+.auth-card p,
+.auth-card .auth-footer { color: #55708f !important; }
+.auth-card .section-label { color: #436484 !important; }
+.auth-tabs { background: rgba(38,82,132,.10); border-color: rgba(38,82,132,.13); }
+.auth-tabs button { color: #5b7390; }
+.auth-tabs button.active { color: #14365f; background: rgba(255,255,255,.76); box-shadow: 0 6px 18px rgba(48,88,132,.12), inset 0 1px 0 #fff; }
+.auth-form label > span { color: #355578 !important; }
+.auth-card .input-wrap { background: rgba(255,255,255,.76); border-color: rgba(47,84,125,.18); }
+.auth-card .input-wrap input { color: #10294d !important; }
+.auth-card .input-wrap input::placeholder { color: #7890aa; }
+.auth-card .input-action,
+.auth-card .text-button { color: #376ca7; }
+.auth-card .checkbox-row span { color: #4d6885 !important; }
+.auth-submit { color: #fff !important; }
+
+/* ---------- Insights tabs: high-contrast iOS segmented control ---------- */
+.theme-light .insight-tabs {
+  background: rgba(255,255,255,.55);
+  border-color: rgba(255,255,255,.76);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 10px 28px rgba(38,79,126,.12);
+}
+.insight-tabs button { color: #496887 !important; font-size: 10px; font-weight: 800; }
+.insight-tabs button.active {
+  color: #12345d !important;
+  background: rgba(255,255,255,.82) !important;
+  box-shadow: 0 5px 16px rgba(34,78,127,.15), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+.theme-dark .insight-tabs button { color: rgba(239,247,255,.72) !important; }
+.theme-dark .insight-tabs button.active { color: #fff !important; background: rgba(93,158,255,.28) !important; }
+
+/* ---------- Goals: visible Short / Long labels in dark mode ---------- */
+.theme-dark .goal-term.short {
+  color: #d9eaff !important;
+  background: rgba(82,153,255,.28) !important;
+  border: 1px solid rgba(127,190,255,.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+.theme-dark .goal-term.long {
+  color: #dff5ff !important;
+  background: rgba(72,191,225,.24) !important;
+  border: 1px solid rgba(127,220,245,.30);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+.theme-dark .goal-type-summary .glass-card { background: rgba(12,30,54,.48); }
+.theme-dark .goal-type-summary span,
+.theme-dark .goal-type-summary small { color: rgba(225,237,252,.72); }
+.theme-dark .goal-type-summary strong { color: #fff; }
+
+/* ---------- User-controlled clock timer ---------- */
+.timer-duration-editor { margin: 8px auto 14px; max-width: 260px; text-align: center; }
+.timer-duration-editor label { display: grid; gap: 6px; }
+.timer-duration-editor label > span { font-size: 9px; font-weight: 800; letter-spacing: .10em; text-transform: uppercase; color: var(--ui-muted); }
+.duration-control { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 5px; border-radius: 17px; background: rgba(255,255,255,.18); border: 1px solid var(--glass-line); box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
+.duration-control button { width: 32px; height: 32px; border-radius: 11px; background: rgba(255,255,255,.30); color: var(--ui-text); font-size: 20px; line-height: 1; }
+.duration-control input { width: 62px; height: 32px; text-align: center; border: 0; outline: 0; border-radius: 10px; background: rgba(255,255,255,.52); color: var(--ui-text); font-size: 16px; font-weight: 800; }
+.duration-control span { font-size: 10px; font-weight: 700; color: var(--ui-muted); margin-right: 3px; }
+.timer-duration-editor p { margin: 6px 0 0; color: var(--ui-muted); font-size: 8px; }
+.theme-light .duration-control { background: rgba(255,255,255,.52); border-color: rgba(255,255,255,.75); }
+.theme-light .duration-control button { background: rgba(255,255,255,.70); color: #17365e; }
+.theme-light .duration-control input { background: rgba(255,255,255,.86); color: #12345d; }
+
+@media (max-width: 820px) {
+  .modal-card { padding: 22px !important; border-radius: 26px !important; }
+  .auth-layout { padding: 22px 16px 34px; }
+  .auth-card { padding: 24px !important; }
+  .sidebar-inner { border-radius: 25px; }
+  .insight-tabs { width: 100%; }
+  .insight-tabs button { flex: 1; }
+  .timer-duration-editor { max-width: 290px; }
+}
+
+
+/* =========================================================
+   DayFlow — iOS 26 Blue Glass V3
+   Readability-first light mode, stronger glass, adaptive scene,
+   iOS-style date calendar strip, refreshed streak and icon treatment.
+   ========================================================= */
+
+:root {
+  --ios-blue: #1677ff;
+  --ios-blue-deep: #0b4fb3;
+  --ios-ink: #102b50;
+  --ios-muted: #496583;
+}
+
+/* Same scenic background family, adapted by theme rather than replaced. */
+.app-shell.theme-light,
+.auth-shell.theme-light {
+  background:
+    radial-gradient(circle at 78% 13%, rgba(255,255,255,.74), transparent 24%),
+    radial-gradient(circle at 14% 78%, rgba(98,174,255,.30), transparent 34%),
+    linear-gradient(145deg, #9bcaf2 0%, #6e9ed4 40%, #b9d9f4 73%, #86b2e3 100%) !important;
+}
+.app-shell.theme-dark,
+.auth-shell.theme-dark {
+  background:
+    radial-gradient(circle at 78% 13%, rgba(91,170,255,.16), transparent 24%),
+    radial-gradient(circle at 14% 78%, rgba(30,105,190,.22), transparent 34%),
+    linear-gradient(145deg, #102d55 0%, #0c2444 42%, #173e69 73%, #081a34 100%) !important;
+}
+
+/* Stronger iOS-like glass everywhere. */
+.glass-card,
+.sidebar-inner,
+.bottom-nav,
+.today-pill,
+.weather-pill,
+.theme-button,
+.date-strip,
+.insight-tabs,
+.journal-date-pill {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.42), rgba(255,255,255,.16) 52%, rgba(255,255,255,.28)) !important;
+  border: 1px solid rgba(255,255,255,.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -1px 0 rgba(255,255,255,.14),
+    0 20px 60px rgba(28,73,126,.20) !important;
+  backdrop-filter: blur(42px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(175%) !important;
+}
+
+/* Light mode: make every sidebar option readable. */
+.app-shell.theme-light .sidebar-inner {
+  background: rgba(245,250,255,.50) !important;
+  border-color: rgba(255,255,255,.78) !important;
+}
+.app-shell.theme-light .sidebar-brand,
+.app-shell.theme-light .sidebar-brand span,
+.app-shell.theme-light .nav-item,
+.app-shell.theme-light .nav-item span,
+.app-shell.theme-light .logout-button,
+.app-shell.theme-light .logout-button span,
+.app-shell.theme-light .mini-focus b,
+.app-shell.theme-light .mini-focus span {
+  color: var(--ios-ink) !important;
+  text-shadow: 0 1px 1px rgba(255,255,255,.55);
+}
+.app-shell.theme-light .nav-item {
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid transparent !important;
+}
+.app-shell.theme-light .nav-item:hover {
+  background: rgba(255,255,255,.48) !important;
+  border-color: rgba(255,255,255,.62) !important;
+}
+.app-shell.theme-light .nav-item.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(22,119,255,.92), rgba(75,158,255,.70)) !important;
+  border-color: rgba(255,255,255,.72) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 10px 28px rgba(22,119,255,.25) !important;
+}
+.app-shell.theme-light .nav-item.active span,
+.app-shell.theme-light .nav-item.active svg { color:#fff !important; }
+.app-shell.theme-light .logout-button:hover { background:rgba(255,255,255,.42) !important; }
+
+/* Light mode global text hierarchy. */
+.app-shell.theme-light .page-content,
+.app-shell.theme-light .page-content h1,
+.app-shell.theme-light .page-content h2,
+.app-shell.theme-light .page-content h3,
+.app-shell.theme-light .page-content p,
+.app-shell.theme-light .page-content strong,
+.app-shell.theme-light .page-content b,
+.app-shell.theme-light .page-content span,
+.app-shell.theme-light .hero-row h1,
+.app-shell.theme-light .hero-row p {
+  color: var(--ios-ink);
+}
+.app-shell.theme-light .section-label,
+.app-shell.theme-light .eyebrow { color:#315579 !important; }
+.app-shell.theme-light .card-head .icon-button,
+.app-shell.theme-light .icon-button,
+.app-shell.theme-light .date-nav-button { color:#1b4f87 !important; }
+
+/* iOS-style date calendar strip. */
+.date-strip {
+  padding: 8px !important;
+  border-radius: 24px !important;
+  display:flex !important;
+  align-items:stretch !important;
+  gap:7px !important;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.date-strip::-webkit-scrollbar { display:none; }
+.date-strip > button:not(.date-nav-button) {
+  min-width:68px !important;
+  min-height:72px !important;
+  border-radius:19px !important;
+  padding:9px 10px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:3px !important;
+  background:rgba(255,255,255,.18) !important;
+  border:1px solid rgba(255,255,255,.30) !important;
+  color:var(--ios-ink) !important;
+  transition:.2s ease;
+}
+.date-strip > button:not(.date-nav-button) span {
+  font-size:10px !important;
+  font-weight:700 !important;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  opacity:.68;
+}
+.date-strip > button:not(.date-nav-button) strong {
+  font-size:23px !important;
+  line-height:1 !important;
+}
+.date-strip > button:not(.date-nav-button):hover { background:rgba(255,255,255,.42) !important; transform:translateY(-1px); }
+.date-strip > button:not(.date-nav-button).active {
+  color:#fff !important;
+  background:linear-gradient(145deg, rgba(24,122,255,.96), rgba(77,166,255,.78)) !important;
+  border-color:rgba(255,255,255,.72) !important;
+  box-shadow:0 12px 30px rgba(18,107,229,.28), inset 0 1px 0 rgba(255,255,255,.55) !important;
+}
+.date-strip > button:not(.date-nav-button).active span,
+.date-strip > button:not(.date-nav-button).active strong { color:#fff !important; }
+.date-nav-button {
+  flex:0 0 42px !important;
+  width:42px !important;
+  min-height:42px !important;
+  align-self:center;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.28) !important;
+  border:1px solid rgba(255,255,255,.44) !important;
+}
+
+/* Refreshed Daily Streak — compact iOS widget. */
+.streak-card-v2 {
+  min-width:250px;
+  display:grid !important;
+  grid-template-columns:48px 1fr;
+  grid-template-rows:auto 12px;
+  column-gap:12px;
+  row-gap:9px;
+  align-items:center;
+  padding:13px 15px !important;
+  border-radius:22px !important;
+}
+.streak-orb {
+  width:48px;
+  height:48px;
+  border-radius:17px;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  background:linear-gradient(145deg, #ff9f45, #ff5f6d 58%, #c73d75);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 9px 25px rgba(239,93,91,.24);
+}
+.streak-copy { min-width:0; display:grid; grid-template-columns:auto 1fr; column-gap:7px; align-items:baseline; }
+.streak-copy small { grid-column:1 / -1; font-size:8px; letter-spacing:.13em; font-weight:850; color:var(--ios-muted) !important; }
+.streak-copy strong { font-size:23px; line-height:1; color:var(--ios-ink) !important; }
+.streak-copy span { font-size:9px; color:var(--ios-muted) !important; }
+.streak-week { grid-column:1 / -1; display:flex; gap:5px; align-items:center; }
+.streak-week i { display:block; height:5px; flex:1; border-radius:99px; background:rgba(55,91,130,.14); }
+.streak-week i.on { background:linear-gradient(90deg,#ffb24f,#ff6b70); box-shadow:0 0 8px rgba(255,106,105,.20); }
+.app-shell.theme-dark .streak-copy strong { color:#f3f9ff !important; }
+.app-shell.theme-dark .streak-copy small,
+.app-shell.theme-dark .streak-copy span { color:#b8d3ef !important; }
+.app-shell.theme-dark .streak-week i { background:rgba(210,232,255,.14); }
+
+/* Data-entry state: stronger modal isolation and glass depth. */
+.modal-backdrop {
+  background:rgba(7,28,57,.48) !important;
+  backdrop-filter:blur(24px) saturate(135%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(135%) !important;
+}
+.modal-card {
+  border-radius:30px !important;
+  background:linear-gradient(145deg, rgba(245,251,255,.76), rgba(220,237,255,.54)) !important;
+  border-color:rgba(255,255,255,.82) !important;
+  box-shadow:0 35px 100px rgba(9,39,77,.30), inset 0 1px 0 rgba(255,255,255,.92) !important;
+  backdrop-filter:blur(44px) saturate(165%) !important;
+  -webkit-backdrop-filter:blur(44px) saturate(165%) !important;
+}
+.app-shell.theme-light .modal-card input,
+.app-shell.theme-light .modal-card textarea,
+.app-shell.theme-light .modal-card select {
+  color:#102b50 !important;
+  background:rgba(255,255,255,.72) !important;
+}
+.app-shell.theme-dark .modal-card {
+  background:linear-gradient(145deg, rgba(17,48,83,.91), rgba(7,28,55,.84)) !important;
+}
+
+/* Insights segmented control: unmistakably selected. */
+.insight-tabs {
+  padding:5px !important;
+  border-radius:18px !important;
+  gap:4px !important;
+}
+.insight-tabs button {
+  min-height:38px !important;
+  min-width:86px;
+  padding:0 17px !important;
+  border-radius:13px !important;
+  color:#315579 !important;
+  font-weight:750 !important;
+}
+.insight-tabs button.active {
+  color:#fff !important;
+  background:linear-gradient(135deg,#1677ff,#5ca9ff) !important;
+  box-shadow:0 7px 18px rgba(22,119,255,.22), inset 0 1px 0 rgba(255,255,255,.48) !important;
+}
+.app-shell.theme-dark .insight-tabs button { color:#bcd8f4 !important; }
+.app-shell.theme-dark .insight-tabs button.active { color:#fff !important; }
+
+/* Goal badges readable in both themes. */
+.goal-term.short,
+.goal-term.long {
+  border:1px solid rgba(255,255,255,.35) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25);
+  font-size:9px !important;
+  padding:6px 9px !important;
+}
+.app-shell.theme-dark .goal-term.short { color:#d7eaff !important; background:rgba(54,139,255,.32) !important; }
+.app-shell.theme-dark .goal-term.long { color:#e2f5ff !important; background:rgba(80,191,255,.28) !important; }
+.app-shell.theme-light .goal-term.short { color:#0b56ad !important; background:rgba(82,157,255,.22) !important; }
+.app-shell.theme-light .goal-term.long { color:#075e86 !important; background:rgba(104,202,255,.22) !important; }
+
+/* Custom icon treatment — consistent iOS blue glyphs in light mode. */
+.app-shell.theme-light svg { filter:drop-shadow(0 1px 1px rgba(255,255,255,.30)); }
+.app-shell.theme-light .nav-item:not(.active) svg,
+.app-shell.theme-light .section-label svg,
+.app-shell.theme-light .eyebrow svg { color:#2766a4 !important; }
+
+@media (max-width:700px) {
+  .streak-card-v2 { min-width:0; width:100%; }
+  .date-strip > button:not(.date-nav-button) { min-width:60px !important; min-height:68px !important; }
+  .insight-tabs { width:100%; }
+  .insight-tabs button { flex:1; min-width:0; padding:0 8px !important; }
+}
+
+
+/* =========================================================
+   DayFlow iOS 26 Liquid Glass V4 — visual refinement
+   ========================================================= */
+:root {
+  --ios-blue: #1677ff;
+  --ios-blue-soft: #6daeff;
+  --ios-ink: #102b50;
+}
+
+/* Same scenic idea, but cleaner and more premium in both themes. */
+.app-shell, .auth-shell {
+  background:
+    radial-gradient(circle at 78% 10%, rgba(255,255,255,.62), transparent 20%),
+    radial-gradient(circle at 18% 35%, rgba(116,190,255,.34), transparent 30%),
+    radial-gradient(circle at 82% 72%, rgba(116,146,255,.20), transparent 30%),
+    linear-gradient(150deg, #9fcfff 0%, #6ea6e5 34%, #7ca4d5 62%, #b9d7f4 100%) !important;
+}
+.app-shell::before, .auth-shell::before {
+  background:
+    radial-gradient(ellipse at 52% 23%, rgba(255,255,255,.42), transparent 31%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(21,54,96,.12)) !important;
+}
+
+/* More authentic glass: translucent, layered, bright rim, deeper blur. */
+.glass-card,
+.sidebar-inner,
+.today-pill,
+.weather-pill,
+.theme-button,
+.bottom-nav,
+.date-strip,
+.insight-tabs,
+.focus-timer-card {
+  backdrop-filter: blur(38px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(38px) saturate(175%) !important;
+}
+.glass-card {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.40), rgba(255,255,255,.15) 48%, rgba(222,242,255,.25)) !important;
+  border: 1px solid rgba(255,255,255,.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    inset 0 -1px 0 rgba(33,75,125,.08),
+    0 24px 70px rgba(35,74,125,.18) !important;
+}
+.glass-card::before,
+.sidebar-inner::before {
+  opacity: .75 !important;
+}
+
+/* New DayFlow flowing mark. */
+.brand-mark.flow-mark {
+  color: #116fe9;
+  background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(177,220,255,.46)) !important;
+  border-color: rgba(255,255,255,.78) !important;
+  box-shadow: 0 10px 28px rgba(22,119,255,.18), inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.brand-mark.flow-mark svg { filter: drop-shadow(0 2px 5px rgba(18,104,219,.18)); }
+
+/* Light mode: readable iOS-style sidebar, not washed-out white. */
+.app-shell.theme-light .sidebar-inner {
+  background: linear-gradient(145deg, rgba(248,253,255,.66), rgba(212,233,255,.34)) !important;
+  border-color: rgba(255,255,255,.82) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 24px 65px rgba(43,77,118,.16) !important;
+}
+.app-shell.theme-light .sidebar-brand,
+.app-shell.theme-light .sidebar-brand span { color: #102b50 !important; }
+.app-shell.theme-light .nav-item { color: #355170 !important; }
+.app-shell.theme-light .nav-item svg { color: #476b94 !important; }
+.app-shell.theme-light .nav-item:hover { color: #102b50 !important; background: rgba(255,255,255,.48) !important; }
+.app-shell.theme-light .nav-item.active {
+  color: #0c5fd1 !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(191,224,255,.48)) !important;
+  border: 1px solid rgba(255,255,255,.76) !important;
+  box-shadow: 0 8px 24px rgba(38,102,180,.14), inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.app-shell.theme-light .nav-item.active svg { color: #0c70ee !important; }
+.app-shell.theme-light .logout-button { color: #49637f !important; }
+.app-shell.theme-light .logout-button:hover { color: #12355e !important; background: rgba(255,255,255,.42) !important; }
+
+/* Remove the old Daily Focus/sidebar card completely if any cached markup remains. */
+.sidebar .mini-focus { display:none !important; }
+
+/* iOS calendar/date navigator — glass capsules, no harsh grid. */
+.date-strip-navigator {
+  padding: 8px !important;
+  border-radius: 26px !important;
+  background: rgba(255,255,255,.20) !important;
+  border: 1px solid rgba(255,255,255,.42) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.60), 0 18px 48px rgba(32,72,120,.12) !important;
+  backdrop-filter: blur(34px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(170%) !important;
+}
+.date-strip-navigator > button:not(.date-nav-button) {
+  min-height: 70px !important;
+  min-width: 82px !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  color: rgba(255,255,255,.86) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+.date-strip-navigator > button:not(.date-nav-button) span { font-size: 10px !important; font-weight: 700 !important; letter-spacing: .04em; }
+.date-strip-navigator > button:not(.date-nav-button) strong { font-size: 22px !important; font-weight: 650 !important; }
+.date-strip-navigator > button:not(.date-nav-button).active {
+  color: #0d3970 !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.88), rgba(197,229,255,.62)) !important;
+  border-color: rgba(255,255,255,.90) !important;
+  box-shadow: 0 12px 28px rgba(28,94,166,.18), inset 0 1px 0 rgba(255,255,255,.98) !important;
+}
+.date-nav-button { border-radius: 18px !important; background: rgba(255,255,255,.25) !important; }
+.app-shell.theme-light .date-strip-navigator { background: rgba(230,244,255,.44) !important; border-color: rgba(255,255,255,.80) !important; }
+.app-shell.theme-light .date-strip-navigator > button:not(.date-nav-button) { color: #46617e !important; background: rgba(255,255,255,.46) !important; border-color: rgba(67,105,145,.12) !important; }
+.app-shell.theme-light .date-strip-navigator > button:not(.date-nav-button).active { color:#0d3970 !important; background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(188,224,255,.68)) !important; }
+
+/* New Goal icon: target, clearer than diamond. */
+.goal-form .section-label svg { color: #1677ff !important; filter: drop-shadow(0 3px 8px rgba(22,119,255,.22)); }
+
+/* Short/Long goal badges remain readable in dark mode. */
+.app-shell.theme-dark .goal-term.short { color:#dcecff !important; background:rgba(71,145,255,.30) !important; border:1px solid rgba(124,185,255,.30); }
+.app-shell.theme-dark .goal-term.long { color:#e3f6ff !important; background:rgba(90,196,255,.25) !important; border:1px solid rgba(130,220,255,.28); }
+
+/* Stronger modal glass while entering data. */
+.modal-backdrop {
+  background: rgba(8,25,49,.48) !important;
+  backdrop-filter: blur(24px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
+}
+.modal-card {
+  border-radius: 30px !important;
+  backdrop-filter: blur(42px) saturate(175%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(175%) !important;
+  box-shadow: 0 34px 100px rgba(11,35,68,.30), inset 0 1px 0 rgba(255,255,255,.88) !important;
+}
+
+/* Light-mode text safety across all major controls. */
+.app-shell.theme-light h1,
+.app-shell.theme-light h2,
+.app-shell.theme-light h3,
+.app-shell.theme-light strong,
+.app-shell.theme-light b,
+.app-shell.theme-light .page-header p,
+.app-shell.theme-light .topbar .brand-lockup,
+.app-shell.theme-light .today-pill strong,
+.app-shell.theme-light .task-copy b,
+.app-shell.theme-light .habit-main b,
+.app-shell.theme-light .goal-card h2 { color:#102b50 !important; }
+.app-shell.theme-light .eyebrow,
+.app-shell.theme-light .section-label { color:#416080 !important; }
+
+/* Better dark scenic background. */
+.app-shell.theme-dark {
+  background:
+    radial-gradient(circle at 76% 12%, rgba(96,176,255,.20), transparent 20%),
+    radial-gradient(circle at 18% 40%, rgba(54,121,214,.20), transparent 30%),
+    linear-gradient(150deg,#10284c 0%,#183a67 38%,#203e68 66%,#09172e 100%) !important;
+}
+
+@media (max-width:700px) {
+  .date-strip-navigator { padding:6px !important; border-radius:22px !important; }
+  .date-strip-navigator > button:not(.date-nav-button) { min-width:68px !important; min-height:64px !important; }
+}
+
+
+/* ===== Planner Calendar V2 — iOS 26 Liquid Glass ===== */
+.planner-calendar-v2 {
+  position: relative;
+  margin: 4px 0 22px;
+  padding: 12px;
+  border-radius: 30px;
+  border: 1px solid rgba(255,255,255,.48);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.34), rgba(255,255,255,.10)),
+    rgba(72,132,198,.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -1px 0 rgba(255,255,255,.12),
+    0 22px 60px rgba(17,58,105,.18);
+  backdrop-filter: blur(38px) saturate(175%);
+  -webkit-backdrop-filter: blur(38px) saturate(175%);
+  overflow:hidden;
+}
+.planner-calendar-v2::before {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(circle at 12% 0%, rgba(255,255,255,.42), transparent 34%), radial-gradient(circle at 88% 100%, rgba(80,170,255,.18), transparent 38%);
+}
+.planner-calendar-head { position:relative; z-index:1; display:grid; grid-template-columns:42px 1fr auto 42px; gap:9px; align-items:center; margin-bottom:10px; }
+.planner-calendar-title { text-align:left; padding-left:4px; min-width:0; }
+.planner-calendar-title span { display:block; font-size:9px; font-weight:800; letter-spacing:.16em; opacity:.62; }
+.planner-calendar-title strong { display:block; margin-top:2px; font-size:18px; font-weight:700; letter-spacing:-.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.calendar-nav-glass, .calendar-today-glass {
+  height:38px; border-radius:14px; border:1px solid rgba(255,255,255,.40);
+  background:rgba(255,255,255,.18); color:inherit; display:grid; place-items:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48), 0 7px 18px rgba(15,55,100,.10);
+  backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%);
+  transition:.2s ease; cursor:pointer;
+}
+.calendar-nav-glass:hover, .calendar-today-glass:hover { transform:translateY(-1px); background:rgba(255,255,255,.28); }
+.calendar-today-glass { padding:0 13px; font-size:12px; font-weight:750; color:#fff; background:linear-gradient(145deg, rgba(61,139,231,.82), rgba(29,92,188,.68)); border-color:rgba(255,255,255,.55); }
+.planner-week-grid { position:relative; z-index:1; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:7px; }
+.planner-day-cell { min-width:0; min-height:77px; padding:9px 5px 7px; border-radius:20px; border:1px solid rgba(255,255,255,.24); background:rgba(255,255,255,.105); color:inherit; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; cursor:pointer; transition:.2s ease; box-shadow:inset 0 1px 0 rgba(255,255,255,.22); }
+.planner-day-cell span { font-size:10px; font-weight:750; opacity:.66; text-transform:uppercase; letter-spacing:.04em; }
+.planner-day-cell strong { font-size:23px; line-height:1; font-weight:650; letter-spacing:-.04em; }
+.planner-day-cell i { min-height:11px; font-style:normal; font-size:7px; font-weight:800; opacity:.0; }
+.planner-day-cell:hover { transform:translateY(-2px); background:rgba(255,255,255,.20); }
+.planner-day-cell.today i { opacity:.72; }
+.planner-day-cell.today:not(.active) { border-color:rgba(120,190,255,.40); }
+.planner-day-cell.active { color:#fff; background:linear-gradient(150deg, rgba(91,170,249,.92), rgba(31,103,204,.74)); border-color:rgba(255,255,255,.72); box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 12px 28px rgba(24,101,190,.25); transform:translateY(-2px); }
+.planner-day-cell.active span, .planner-day-cell.active i { opacity:.92; }
+
+.app-shell.theme-light .planner-calendar-v2 {
+  background:linear-gradient(145deg, rgba(255,255,255,.78), rgba(221,241,255,.40)), rgba(255,255,255,.28);
+  border-color:rgba(255,255,255,.88);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 22px 60px rgba(35,86,133,.15);
+}
+.app-shell.theme-light .planner-calendar-title strong, .app-shell.theme-light .planner-calendar-title span { color:#153c68; }
+.app-shell.theme-light .calendar-nav-glass { background:rgba(255,255,255,.66); color:#173f69; border-color:rgba(46,95,143,.14); }
+.app-shell.theme-light .planner-day-cell { background:rgba(255,255,255,.60); color:#173f69; border-color:rgba(46,95,143,.11); }
+.app-shell.theme-light .planner-day-cell span { color:#315878; }
+.app-shell.theme-light .planner-day-cell.active { color:#fff; background:linear-gradient(150deg, rgba(87,163,242,.94), rgba(35,107,201,.78)); border-color:rgba(255,255,255,.92); }
+
+@media (max-width: 760px) {
+  .planner-calendar-v2 { padding:9px; border-radius:25px; margin-bottom:18px; }
+  .planner-calendar-head { grid-template-columns:36px 1fr auto 36px; gap:6px; }
+  .calendar-nav-glass, .calendar-today-glass { height:35px; border-radius:12px; }
+  .calendar-today-glass { padding:0 10px; }
+  .planner-calendar-title strong { font-size:15px; }
+  .planner-week-grid { gap:4px; }
+  .planner-day-cell { min-height:69px; border-radius:17px; padding:7px 2px 5px; }
+  .planner-day-cell span { font-size:8px; }
+  .planner-day-cell strong { font-size:20px; }
+}
+@media (max-width: 430px) {
+  .planner-day-cell { min-height:64px; border-radius:15px; }
+  .planner-day-cell i { font-size:6px; }
+  .planner-calendar-title span { font-size:8px; }
+  .planner-calendar-title strong { font-size:14px; }
+}
+
+/* =========================================================
+   DAYFLOW V6 — STUDENT-FIRST UX POLISH
+   ========================================================= */
+
+.next-task-card{
+  padding:20px 22px;
+  margin:0 0 18px;
+  border-radius:28px;
+  position:relative;
+  overflow:hidden;
+}
+.next-task-card::after{
+  content:"";
+  position:absolute; inset:-50% auto auto 58%;
+  width:260px; height:180px;
+  background:radial-gradient(circle,rgba(93,166,255,.22),transparent 68%);
+  pointer-events:none;
+}
+.next-task-meta{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.next-task-body{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:8px}
+.next-task-body h2{margin:0 0 6px;font-size:24px;letter-spacing:-.025em}
+.next-task-body p{margin:0;display:flex;align-items:center;gap:6px;opacity:.72;font-size:13px}
+.next-task-empty{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.next-task-empty h2{margin:5px 0;font-size:20px}
+.next-task-empty p{margin:0;opacity:.7}
+.priority-mini,.priority-chip{
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:10px;
+  font-weight:750;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.priority-mini.high,.priority-chip.high.active{background:rgba(255,92,105,.18);color:#ff6d78}
+.priority-mini.normal,.priority-chip.normal.active{background:rgba(76,143,255,.16);color:#75a9ff}
+.priority-mini.low,.priority-chip.low.active{background:rgba(80,190,150,.15);color:#69cda8}
+.priority-picker{display:flex;gap:8px;flex-wrap:wrap}
+.priority-chip{background:rgba(255,255,255,.07);color:inherit;cursor:pointer;padding:8px 12px}
+.priority-chip.active{box-shadow:0 0 0 2px rgba(255,255,255,.18),0 8px 20px rgba(30,100,200,.12)}
+.modal-field small{opacity:.55;margin-left:5px;font-weight:500}
+.goal-linked-count{font-size:12px;opacity:.58;margin:-2px 0 10px}
+.focus-task-name{
+  width:max-content;max-width:100%;margin:0 auto 9px;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.missed-task-actions{
+  display:flex;align-items:center;gap:7px;padding:0 0 8px 53px;flex-wrap:wrap;
+}
+.missed-task-actions span{
+  color:#ff7d84;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-right:auto
+}
+.missed-task-actions button{
+  border:0;border-radius:999px;padding:5px 9px;background:rgba(255,255,255,.08);
+  color:inherit;font:inherit;font-size:10px;cursor:pointer
+}
+.planner-task-wrap{border-bottom:1px solid rgba(255,255,255,.08)}
+.planner-task-wrap:last-child{border-bottom:0}
+.journal-prompts{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.journal-prompts>span{font-size:11px;opacity:.55}
+.journal-prompts button{
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);
+  color:inherit;border-radius:999px;padding:6px 9px;font:inherit;font-size:10px;cursor:pointer
+}
+.quick-add-float{
+  display:none;position:fixed;z-index:35;right:18px;bottom:84px;
+  width:54px;height:54px;border-radius:18px;border:1px solid rgba(255,255,255,.3);
+  background:linear-gradient(145deg,rgba(103,177,255,.78),rgba(38,105,207,.72));
+  color:#fff;box-shadow:0 15px 35px rgba(20,70,140,.3);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);cursor:pointer
+}
+
+/* Focus / study mode */
+.study-mode-shell{
+  position:fixed;inset:0;z-index:100;
+  background:linear-gradient(145deg,rgba(7,29,67,.9),rgba(12,73,140,.78));
+  backdrop-filter:blur(35px) saturate(150%);-webkit-backdrop-filter:blur(35px) saturate(150%);
+  color:#fff;padding:24px;overflow:auto;
+}
+.study-mode-top{display:flex;justify-content:space-between;align-items:center;max-width:900px;margin:0 auto}
+.study-mode-center{min-height:calc(100vh - 90px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.study-mode-center h1{font-size:clamp(30px,5vw,54px);margin:12px 0 5px;letter-spacing:-.04em}
+.study-mode-center>p{opacity:.7;margin:0 0 20px}
+.study-mode-center .focus-timer-card{width:min(440px,100%);margin:0 0 18px}
+.study-mode-center>.secondary-button{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22)}
+
+/* Login / signup premium glass */
+.auth-shell{
+  min-height:100vh;position:relative;overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 15%,rgba(114,188,255,.34),transparent 30%),
+    radial-gradient(circle at 85% 80%,rgba(63,126,232,.25),transparent 34%),
+    linear-gradient(145deg,#0b2b61,#2e73ba 52%,#8ebce9);
+}
+.auth-shell::before{
+  content:"";position:absolute;inset:auto -10% -18% -10%;height:50%;
+  background:linear-gradient(180deg,transparent,rgba(4,29,67,.36));
+  pointer-events:none;
+}
+.auth-layout{position:relative;z-index:1}
+.auth-card{
+  box-shadow:0 35px 90px rgba(3,25,60,.26),inset 0 1px rgba(255,255,255,.45)!important;
+}
+.auth-card .input-wrap{
+  background:rgba(255,255,255,.1)!important;
+  border-color:rgba(255,255,255,.2)!important;
+  min-height:52px;
+}
+.auth-card .input-wrap:focus-within{
+  border-color:rgba(104,174,255,.85)!important;
+  box-shadow:0 0 0 3px rgba(73,145,244,.15);
+}
+.auth-card .input-wrap input{font-size:15px}
+.auth-tabs{padding:5px!important;border-radius:16px!important;background:rgba(255,255,255,.08)!important}
+.auth-tabs button{border-radius:12px!important}
+.auth-card .primary-button{min-height:50px;border-radius:16px}
+.auth-mini{box-shadow:0 16px 35px rgba(5,35,80,.12)!important}
+
+/* Better light mode readability */
+.theme-light .next-task-card,
+.theme-light .today-list,
+.theme-light .planner-calendar-v2,
+.theme-light .glass-card{
+  border-color:rgba(35,78,130,.13);
+}
+.theme-light .next-task-card::after{opacity:.55}
+.theme-light .priority-chip{border-color:rgba(30,75,125,.14)}
+.theme-light .journal-prompts button,
+.theme-light .missed-task-actions button{border-color:rgba(30,75,125,.12);background:rgba(255,255,255,.32)}
+.theme-light .focus-task-name{background:rgba(255,255,255,.42);border-color:rgba(30,75,125,.12)}
+
+@media (max-width:760px){
+  .quick-add-float{display:flex;align-items:center;justify-content:center}
+  .next-task-card{padding:17px;border-radius:23px}
+  .next-task-body{align-items:flex-start;flex-direction:column}
+  .next-task-body h2{font-size:21px}
+  .next-task-body .primary-button{width:100%;justify-content:center}
+  .next-task-empty{align-items:flex-start;flex-direction:column}
+  .missed-task-actions{padding-left:50px}
+  .study-mode-shell{padding:16px}
+  .study-mode-center{min-height:calc(100vh - 70px)}
+  .study-mode-center h1{font-size:32px}
+}
+
+
+/* =========================================================
+   DAYFLOW V8 — LIGHT MODE ONLY
+   IMPORTANT: Dark mode is intentionally untouched.
+   ========================================================= */
+
+/* New dedicated Light Mode wallpaper / atmosphere only. */
+.app-shell.theme-light .static-weather-scene {
+  background:
+    radial-gradient(ellipse at 76% 15%, rgba(255,248,220,.92) 0 5%, rgba(255,232,190,.34) 15%, transparent 32%),
+    radial-gradient(ellipse at 18% 20%, rgba(220,243,255,.62), transparent 34%),
+    linear-gradient(180deg,#9ed3f2 0%,#79b1df 38%,#5b91bf 67%,#35688f 100%) !important;
+}
+.app-shell.theme-light .static-weather-scene::before {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),transparent 30%,rgba(18,57,91,.08) 74%,rgba(13,45,76,.16)),
+    radial-gradient(ellipse at 52% 58%,rgba(255,255,255,.12),transparent 42%) !important;
+}
+.app-shell.theme-light .static-weather-scene::after {
+  background:
+    linear-gradient(180deg,transparent,rgba(13,45,76,.30)),
+    radial-gradient(ellipse at 16% 62%,rgba(31,79,117,.40),transparent 47%),
+    radial-gradient(ellipse at 82% 55%,rgba(22,65,101,.34),transparent 46%) !important;
+}
+.app-shell.theme-light .scene-glow {
+  background:radial-gradient(circle,rgba(255,248,222,.92) 0 12%,rgba(255,229,181,.30) 32%,transparent 70%) !important;
+}
+.app-shell.theme-light .scene-mountain.back {
+  background:linear-gradient(180deg,rgba(82,126,164,.42),rgba(43,82,118,.30)) !important;
+}
+.app-shell.theme-light .scene-mountain.front {
+  background:linear-gradient(180deg,rgba(35,76,112,.48),rgba(18,51,82,.68)) !important;
+}
+
+/* Light Mode readability: stronger surfaces and foreground contrast. */
+.app-shell.theme-light {
+  color:#102943 !important;
+}
+.app-shell.theme-light .glass-card,
+.app-shell.theme-light .sidebar-inner,
+.app-shell.theme-light .today-pill,
+.app-shell.theme-light .weather-pill,
+.app-shell.theme-light .theme-button,
+.app-shell.theme-light .bottom-nav,
+.app-shell.theme-light .date-strip,
+.app-shell.theme-light .insight-tabs,
+.app-shell.theme-light .focus-timer-card,
+.app-shell.theme-light .next-task-card,
+.app-shell.theme-light .planner-calendar-v2 {
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(235,247,255,.60)) !important;
+  border-color:rgba(255,255,255,.94) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),inset 0 -1px 0 rgba(25,62,101,.08),0 18px 50px rgba(21,57,94,.15) !important;
+  backdrop-filter:blur(34px) saturate(155%) !important;
+  -webkit-backdrop-filter:blur(34px) saturate(155%) !important;
+}
+
+/* Sidebar — selected page is unmistakable. */
+.app-shell.theme-light .sidebar-inner {
+  background:linear-gradient(155deg,rgba(255,255,255,.91),rgba(224,240,255,.72)) !important;
+  border-color:rgba(255,255,255,.98) !important;
+}
+.app-shell.theme-light .sidebar-brand,
+.app-shell.theme-light .sidebar-brand span { color:#0b2848 !important; }
+.app-shell.theme-light .sidebar-brand small,
+.app-shell.theme-light .sidebar .eyebrow { color:#496986 !important; }
+.app-shell.theme-light .nav-item {
+  color:#294866 !important;
+  background:rgba(255,255,255,.28) !important;
+  border:1px solid transparent !important;
+}
+.app-shell.theme-light .nav-item svg { color:#365f84 !important; }
+.app-shell.theme-light .nav-item:hover {
+  color:#0c2b4d !important;
+  background:rgba(255,255,255,.72) !important;
+  border-color:rgba(255,255,255,.90) !important;
+}
+.app-shell.theme-light .nav-item.active {
+  color:#fff !important;
+  background:linear-gradient(135deg,#2f86e6,#1764c1) !important;
+  border-color:rgba(255,255,255,.74) !important;
+  box-shadow:0 10px 26px rgba(24,96,181,.26),inset 0 1px 0 rgba(255,255,255,.48) !important;
+}
+.app-shell.theme-light .nav-item.active svg,
+.app-shell.theme-light .nav-item.active span { color:#fff !important; }
+
+/* Text hierarchy. */
+.app-shell.theme-light h1,
+.app-shell.theme-light h2,
+.app-shell.theme-light h3,
+.app-shell.theme-light h4,
+.app-shell.theme-light strong,
+.app-shell.theme-light .page-header p,
+.app-shell.theme-light .section-title,
+.app-shell.theme-light .section-label,
+.app-shell.theme-light .task-copy,
+.app-shell.theme-light .task-copy b,
+.app-shell.theme-light .habit-main,
+.app-shell.theme-light .habit-main b,
+.app-shell.theme-light .goal-card h2,
+.app-shell.theme-light .goal-card strong,
+.app-shell.theme-light .next-task-body h2 { color:#122b49 !important; }
+.app-shell.theme-light p,
+.app-shell.theme-light small,
+.app-shell.theme-light label,
+.app-shell.theme-light .task-copy small,
+.app-shell.theme-light .habit-main p,
+.app-shell.theme-light .goal-due,
+.app-shell.theme-light .empty-state p,
+.app-shell.theme-light .planner-day-caption,
+.app-shell.theme-light .eyebrow { color:#425c78 !important; }
+
+/* Forms. */
+.app-shell.theme-light input,
+.app-shell.theme-light textarea,
+.app-shell.theme-light select {
+  color:#162d48 !important;
+  background:rgba(255,255,255,.76) !important;
+  border-color:rgba(39,78,118,.18) !important;
+}
+.app-shell.theme-light input::placeholder,
+.app-shell.theme-light textarea::placeholder { color:#6a7f98 !important; }
+.app-shell.theme-light input:focus,
+.app-shell.theme-light textarea:focus,
+.app-shell.theme-light select:focus {
+  border-color:rgba(36,119,218,.50) !important;
+  box-shadow:0 0 0 3px rgba(52,137,226,.12) !important;
+}
+
+/* Planner dates. */
+.app-shell.theme-light .planner-calendar-title strong,
+.app-shell.theme-light .planner-calendar-title span,
+.app-shell.theme-light .calendar-nav-glass,
+.app-shell.theme-light .calendar-today-glass,
+.app-shell.theme-light .planner-day-cell,
+.app-shell.theme-light .planner-day-cell span,
+.app-shell.theme-light .planner-day-cell strong { color:#173b60 !important; }
+.app-shell.theme-light .calendar-nav-glass { background:rgba(255,255,255,.80) !important; }
+.app-shell.theme-light .calendar-today-glass { color:#fff !important; background:linear-gradient(145deg,#2f8ae9,#1763bd) !important; }
+.app-shell.theme-light .planner-day-cell { background:rgba(255,255,255,.74) !important; border-color:rgba(40,79,119,.13) !important; }
+.app-shell.theme-light .planner-day-cell:hover { background:rgba(255,255,255,.92) !important; }
+.app-shell.theme-light .planner-day-cell.active,
+.app-shell.theme-light .planner-day-cell.active span,
+.app-shell.theme-light .planner-day-cell.active strong,
+.app-shell.theme-light .planner-day-cell.active i { color:#fff !important; }
+
+/* Buttons / bottom navigation. */
+.app-shell.theme-light .secondary-button {
+  color:#244866 !important;
+  background:rgba(255,255,255,.70) !important;
+  border-color:rgba(42,82,122,.18) !important;
+}
+.app-shell.theme-light .primary-button { color:#fff !important; background:linear-gradient(145deg,#318be9,#1765c2) !important; }
+.app-shell.theme-light .bottom-nav button { color:#46627e !important; }
+.app-shell.theme-light .bottom-nav button.active {
+  color:#0d5eaf !important;
+  background:rgba(255,255,255,.82) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 6px 18px rgba(27,86,142,.12) !important;
+}
+.app-shell.theme-light .bottom-nav button.active svg { color:#1677df !important; }
+
+/* Modal readability. */
+.app-shell.theme-light .modal-backdrop { background:rgba(21,48,78,.30) !important; }
+.app-shell.theme-light .modal-card {
+  background:linear-gradient(145deg,rgba(255,255,255,.90),rgba(229,242,255,.78)) !important;
+  color:#152d49 !important;
+  border-color:rgba(255,255,255,.96) !important;
+}
+.app-shell.theme-light .modal-card h2,
+.app-shell.theme-light .modal-card h3,
+.app-shell.theme-light .modal-card label,
+.app-shell.theme-light .modal-card strong,
+.app-shell.theme-light .modal-card p { color:#173553 !important; }
+
+@media (max-width:820px) {
+  .app-shell.theme-light .sidebar-inner,
+  .app-shell.theme-light .bottom-nav { background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(225,241,255,.78)) !important; }
+}
+
+/* =========================================================
+   V9 — Monthly Streak + cleaner Light Mode coastal morning
+   Dark Mode is intentionally untouched by these rules.
+   ========================================================= */
+
+/* Cleaner blue coastal / morning wallpaper for Light Mode only. */
+.app-shell.theme-light .static-weather-scene {
+  background:
+    linear-gradient(180deg, rgba(236,248,255,.16), rgba(20,87,135,.12)),
+    url("https://img3.wallspic.com/crops/4/4/0/5/3/135044/135044-sea-sky-sound-park-reflection-7296x4104.jpg") center center / cover no-repeat !important;
+}
+.app-shell.theme-light .static-weather-scene::before {
+  background:
+    linear-gradient(180deg, rgba(239,249,255,.16) 0%, rgba(211,236,250,.04) 42%, rgba(12,65,105,.18) 100%),
+    radial-gradient(circle at 75% 16%, rgba(255,255,255,.46), transparent 22%) !important;
+}
+.app-shell.theme-light .static-weather-scene::after {
+  background: linear-gradient(180deg, transparent 0%, rgba(7,54,91,.04) 46%, rgba(8,49,82,.20) 100%) !important;
+  filter: blur(8px);
+}
+.app-shell.theme-light .scene-glow,
+.app-shell.theme-light .scene-horizon,
+.app-shell.theme-light .scene-mountain { display:none !important; }
+.app-shell.theme-light .ambient-a { background:rgba(255,255,255,.10) !important; }
+.app-shell.theme-light .ambient-b { background:rgba(133,204,255,.08) !important; }
+.app-shell.theme-light .ambient-c { background:rgba(75,159,225,.10) !important; }
+
+/* Make TODAY unmistakable in the light planner calendar. */
+.app-shell.theme-light .planner-day-cell.today {
+  border-color:rgba(24,119,210,.62) !important;
+  background:linear-gradient(145deg,rgba(226,243,255,.96),rgba(201,229,252,.82)) !important;
+  box-shadow:0 0 0 2px rgba(38,133,221,.16), 0 10px 24px rgba(27,100,164,.14) !important;
+}
+.app-shell.theme-light .planner-day-cell.today span,
+.app-shell.theme-light .planner-day-cell.today strong { color:#0d4f88 !important; }
+.app-shell.theme-light .planner-day-cell.today i {
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  min-width:44px;
+  padding:3px 7px;
+  margin-top:4px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#2f8be8,#1765c2) !important;
+  color:#fff !important;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.03em;
+  box-shadow:0 5px 12px rgba(25,104,187,.22);
+}
+.app-shell.theme-light .planner-day-cell.active.today {
+  background:linear-gradient(145deg,#2f8be8,#1765c2) !important;
+  border-color:rgba(255,255,255,.90) !important;
+  box-shadow:0 12px 28px rgba(24,100,188,.28), inset 0 1px 0 rgba(255,255,255,.48) !important;
+}
+.app-shell.theme-light .planner-day-cell.active.today span,
+.app-shell.theme-light .planner-day-cell.active.today strong { color:#fff !important; }
+
+/* Monthly Streak sidebar item. */
+.app-shell.theme-light .nav-item[aria-current="page"] { color:#fff !important; }
+
+/* Monthly Streak page. */
+.streak-page { padding-bottom:42px; }
+.monthly-streak-summary {
+  display:grid;
+  grid-template-columns:minmax(1.6fr,2fr) repeat(3,minmax(140px,1fr));
+  gap:14px;
+  margin-bottom:18px;
+}
+.monthly-streak-hero,
+.monthly-streak-stat { padding:20px; min-height:132px; }
+.monthly-streak-hero { display:flex; align-items:center; gap:16px; }
+.monthly-streak-icon {
+  width:58px; height:58px; border-radius:20px; display:grid; place-items:center;
+  background:linear-gradient(145deg,rgba(66,150,238,.22),rgba(255,255,255,.22));
+  border:1px solid rgba(255,255,255,.48);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 26px rgba(25,83,139,.12);
+}
+.monthly-streak-hero strong { display:block; font-size:31px; letter-spacing:-.04em; margin:4px 0 2px; }
+.monthly-streak-hero p { margin:0; }
+.monthly-streak-stat { display:flex; flex-direction:column; justify-content:center; }
+.monthly-streak-stat strong { display:block; font-size:30px; letter-spacing:-.04em; margin:5px 0 2px; }
+.monthly-streak-stat p { margin:0; }
+.streak-month-pill {
+  display:inline-flex; align-items:center; gap:8px; padding:11px 14px; border-radius:999px;
+  background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.34);
+  backdrop-filter:blur(20px) saturate(135%); -webkit-backdrop-filter:blur(20px) saturate(135%);
+}
+.streak-month-pill strong { font-size:18px; }
+.streak-month-pill span { font-size:12px; opacity:.78; }
+.monthly-calendar-card { padding:22px; }
+.streak-legend { display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:11px; color:var(--ui-muted); }
+.streak-legend span { display:inline-flex; align-items:center; gap:6px; }
+.legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+.legend-dot.active { background:#2587df; box-shadow:0 0 0 3px rgba(37,135,223,.12); }
+.legend-dot.today { background:transparent; border:2px solid #2587df; }
+.monthly-calendar-grid {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:8px;
+  margin-top:18px;
+}
+.monthly-weekday { text-align:center; font-size:10px; text-transform:uppercase; letter-spacing:.10em; font-weight:700; opacity:.62; padding:4px 0; }
+.monthly-day {
+  min-height:72px; border-radius:18px; border:1px solid rgba(255,255,255,.24);
+  background:rgba(255,255,255,.10); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  position:relative; transition:.18s ease;
+}
+.monthly-day span { font-size:14px; font-weight:700; }
+.monthly-day i { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; color:#fff; background:linear-gradient(145deg,#39a1f2,#1765c2); box-shadow:0 5px 12px rgba(24,100,188,.20); }
+.monthly-day.completed { background:linear-gradient(145deg,rgba(76,161,237,.18),rgba(255,255,255,.10)); border-color:rgba(70,151,226,.28); }
+.monthly-day.today { border:2px solid #2587df; box-shadow:0 0 0 3px rgba(37,135,223,.12),0 10px 22px rgba(29,105,172,.10); }
+.monthly-day.today::after { content:"TODAY"; position:absolute; top:6px; right:7px; font-size:7px; font-weight:800; letter-spacing:.04em; color:#1671c8; }
+.monthly-day.empty { opacity:0; pointer-events:none; }
+.monthly-streak-note { margin-top:16px; padding:13px 15px; border-radius:16px; display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.22); color:var(--ui-muted); font-size:12px; line-height:1.55; }
+.monthly-streak-note svg { flex:none; color:#2587df; }
+
+.app-shell.theme-light .monthly-streak-hero,
+.app-shell.theme-light .monthly-streak-stat,
+.app-shell.theme-light .monthly-calendar-card {
+  background:linear-gradient(135deg,rgba(255,255,255,.84),rgba(229,244,255,.62)) !important;
+  border-color:rgba(255,255,255,.95) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 18px 48px rgba(21,57,94,.13) !important;
+  backdrop-filter:blur(34px) saturate(155%) !important;
+  -webkit-backdrop-filter:blur(34px) saturate(155%) !important;
+}
+.app-shell.theme-light .monthly-streak-hero strong,
+.app-shell.theme-light .monthly-streak-stat strong,
+.app-shell.theme-light .monthly-calendar-card h2,
+.app-shell.theme-light .monthly-day span { color:#102d4c !important; }
+.app-shell.theme-light .monthly-streak-hero p,
+.app-shell.theme-light .monthly-streak-stat p,
+.app-shell.theme-light .streak-legend,
+.app-shell.theme-light .monthly-streak-note { color:#48647f !important; }
+.app-shell.theme-light .monthly-day { background:rgba(255,255,255,.68); border-color:rgba(42,82,122,.12); }
+.app-shell.theme-light .monthly-day.completed { background:linear-gradient(145deg,rgba(215,238,255,.92),rgba(246,251,255,.72)); border-color:rgba(53,139,215,.24); }
+.app-shell.theme-light .monthly-day.today { background:linear-gradient(145deg,rgba(226,243,255,.98),rgba(204,231,253,.86)); border-color:#2587df; }
+.app-shell.theme-light .monthly-day.today span { color:#0d4f88 !important; }
+.app-shell.theme-light .monthly-day.today::after { color:#0d67ad; }
+.app-shell.theme-light .streak-month-pill { color:#12385d; background:rgba(255,255,255,.72); border-color:rgba(255,255,255,.94); }
+
+@media (max-width:1050px) {
+  .monthly-streak-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .monthly-streak-hero { grid-column:1 / -1; }
+}
+@media (max-width:820px) {
+  .streak-page { padding-bottom:100px; }
+  .streak-month-pill { display:none; }
+  .monthly-streak-summary { grid-template-columns:1fr 1fr; }
+  .monthly-streak-hero { grid-column:1 / -1; }
+  .monthly-calendar-card { padding:16px; }
+  .monthly-calendar-grid { gap:6px; }
+  .monthly-day { min-height:58px; border-radius:14px; }
+  .monthly-day.today::after { top:4px; right:4px; font-size:6px; }
+  .monthly-streak-note { font-size:11px; }
+}
+@media (max-width:520px) {
+  .monthly-streak-summary { grid-template-columns:1fr 1fr; }
+  .monthly-streak-hero { padding:16px; }
+  .monthly-streak-icon { width:48px; height:48px; border-radius:16px; }
+  .monthly-streak-hero strong { font-size:25px; }
+  .monthly-streak-stat { min-height:108px; padding:15px; }
+  .monthly-streak-stat strong { font-size:25px; }
+  .monthly-weekday { font-size:8px; }
+  .monthly-day { min-height:50px; border-radius:12px; }
+  .monthly-day span { font-size:12px; }
+  .monthly-day i { width:18px; height:18px; }
+  .monthly-day i svg { width:10px; height:10px; }
+}
+
+/* V10 final refinements */
+.streak-card-trigger{display:block;width:100%;padding:0;border:0;background:none;text-align:left;cursor:pointer;color:inherit}
+.streak-card-trigger:focus-visible{outline:2px solid rgba(37,99,235,.7);outline-offset:4px;border-radius:24px}
+.streak-overlay{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:24px;background:rgba(8,25,52,.34);backdrop-filter:blur(28px) saturate(130%);-webkit-backdrop-filter:blur(28px) saturate(130%)}
+.streak-panel{width:min(760px,94vw);max-height:88vh;overflow:auto;padding:26px;border-radius:32px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.78);box-shadow:0 30px 80px rgba(8,32,70,.25)}
+.theme-dark .streak-panel{background:rgba(18,31,52,.76);border-color:rgba(255,255,255,.14)}
+.streak-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.streak-panel-head h2{margin:6px 0 2px;font-size:30px}.streak-panel-head p{margin:0;opacity:.72}
+.streak-version-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}.streak-version-grid>div{display:flex;flex-direction:column;gap:4px;padding:17px;border-radius:22px;background:rgba(255,255,255,.48);border:1px solid rgba(255,255,255,.62)}.theme-dark .streak-version-grid>div{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}.streak-version-grid strong{font-size:28px}.streak-version-grid span{font-size:12px;opacity:.68}
+.streak-calendar{padding:18px;border-radius:24px;background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.58)}.theme-dark .streak-calendar{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.1)}.streak-weekdays,.streak-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.streak-weekdays span{text-align:center;font-size:11px;font-weight:700;opacity:.58;padding-bottom:5px}.streak-day{min-height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:3px;position:relative;font-weight:700;background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.5)}.theme-dark .streak-day{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.08)}.streak-day.done{background:rgba(37,99,235,.18);border-color:rgba(37,99,235,.35);color:#164aa5}.theme-dark .streak-day.done{color:#bcd6ff;background:rgba(79,140,255,.2)}.streak-day.today{box-shadow:inset 0 0 0 2px #2563eb}.streak-day.today:after{content:'TODAY';position:absolute;bottom:3px;font-size:7px;letter-spacing:.06em;color:#2563eb}
+/* Light-mode planner: future selected dates stay readable */
+.theme-light .planner-day-cell{background:rgba(255,255,255,.52);color:#12315d;border-color:rgba(255,255,255,.76)}
+.theme-light .planner-day-cell:hover{background:rgba(235,244,255,.78)}
+.theme-light .planner-day-cell.active{background:linear-gradient(145deg,rgba(55,123,226,.94),rgba(25,83,166,.9));color:#fff;border-color:rgba(255,255,255,.85);box-shadow:0 12px 28px rgba(35,91,166,.24)}
+.theme-light .planner-day-cell.active span,.theme-light .planner-day-cell.active strong,.theme-light .planner-day-cell.active i{color:#fff!important;opacity:1}
+.theme-light .planner-day-cell.today:not(.active){box-shadow:inset 0 0 0 2px #2563eb;background:rgba(224,238,255,.76)}
+.theme-light .calendar-nav-glass,.theme-light .calendar-today-glass{color:#12315d;background:rgba(255,255,255,.62);border-color:rgba(255,255,255,.8)}
+.theme-light .calendar-today-glass{font-weight:800;color:#1557b0}
+/* Journal inputs */
+.journal-date-card{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px}.journal-mood>span{display:block;font-size:12px;font-weight:700;margin-bottom:8px;opacity:.72}.journal-mood>div{display:flex;gap:8px}.journal-mood button{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.38);font-size:20px;cursor:pointer}.journal-mood button.active{background:rgba(37,99,235,.16);box-shadow:inset 0 0 0 2px rgba(37,99,235,.55)}.journal-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.journal-form-grid .glass-card,.journal-extra-card{padding:20px}.journal-form-grid textarea,.journal-extra-card textarea{min-height:115px}.journal-extra-card{margin-top:14px}.journal-extra-card .primary-button{margin-top:14px}
+.theme-light .journal-date-card,.theme-light .journal-form-grid .glass-card,.theme-light .journal-extra-card{background:rgba(255,255,255,.62);border-color:rgba(255,255,255,.8)}
+.goal-progress-label{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;font-weight:800}.goal-progress-label strong{font-size:15px;color:#1d5eb5}.theme-dark .goal-progress-label strong{color:#bcd6ff}
+@media(max-width:720px){.streak-panel{padding:18px;border-radius:26px}.streak-version-grid{grid-template-columns:1fr}.streak-day{min-height:42px}.journal-date-card,.journal-form-grid{grid-template-columns:1fr}.journal-mood{padding-top:2px}}
+
+
+/* =========================================================
+   V11 — final planner visibility + editable goal completion +
+   combined Daily/Monthly streak opened from the Home streak card.
+   No streak item is added to the sidebar.
+   ========================================================= */
+
+/* Light planner: future/selected dates must never become white-on-white. */
+.app-shell.theme-light .planner-week-grid .planner-day-cell.active,
+.app-shell.theme-light .planner-week-grid .planner-day-cell.active:hover,
+.app-shell.theme-light .planner-day-cell.active:not(.today),
+.app-shell.theme-light .planner-day-cell.active:not(.today):hover {
+  background:linear-gradient(145deg,#3f9af0 0%,#1d68c7 100%) !important;
+  color:#fff !important;
+  border-color:rgba(255,255,255,.96) !important;
+  box-shadow:0 12px 30px rgba(24,95,178,.28), inset 0 1px 0 rgba(255,255,255,.48) !important;
+  opacity:1 !important;
+}
+.app-shell.theme-light .planner-week-grid .planner-day-cell.active:not(.today) span,
+.app-shell.theme-light .planner-week-grid .planner-day-cell.active:not(.today) strong,
+.app-shell.theme-light .planner-week-grid .planner-day-cell.active:not(.today) i {
+  color:#fff !important;
+  opacity:1 !important;
+}
+.app-shell.theme-light .planner-week-grid .planner-day-cell:not(.active) span,
+.app-shell.theme-light .planner-week-grid .planner-day-cell:not(.active) strong {
+  color:#173e67 !important;
+  opacity:1 !important;
+}
+
+/* Remove visual remnants of the old Day Planning Note. */
+.day-note-card { display:none !important; }
+
+/* Editable goal completion. */
+.goal-progress-slider {
+  width:100%;
+  margin:12px 0 4px;
+  accent-color:#287bd8;
+  cursor:pointer;
+}
+.goal-progress-slider::-webkit-slider-runnable-track { height:7px; border-radius:999px; background:rgba(36,104,174,.16); }
+.goal-progress-slider::-webkit-slider-thumb { margin-top:-4px; width:15px; height:15px; border-radius:50%; border:2px solid #fff; background:#287bd8; box-shadow:0 3px 10px rgba(27,91,158,.25); }
+.goal-progress-slider::-moz-range-track { height:7px; border-radius:999px; background:rgba(36,104,174,.16); }
+.goal-progress-slider::-moz-range-thumb { width:15px; height:15px; border-radius:50%; border:2px solid #fff; background:#287bd8; box-shadow:0 3px 10px rgba(27,91,158,.25); }
+.goal-progress-hint { font-size:10px; opacity:.62; margin-top:6px; }
+
+/* Combined streak view opened only by clicking the Home streak card. */
+.streak-hero-row { display:grid; grid-template-columns:1.35fr 1fr; gap:12px; margin:22px 0 12px; }
+.streak-current-hero, .streak-month-hero { padding:20px; border-radius:24px; border:1px solid rgba(255,255,255,.72); background:rgba(255,255,255,.46); display:flex; align-items:center; gap:14px; }
+.theme-dark .streak-current-hero, .theme-dark .streak-month-hero { background:rgba(255,255,255,.065); border-color:rgba(255,255,255,.1); }
+.streak-hero-icon { width:52px; height:52px; border-radius:18px; display:grid; place-items:center; background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(197,224,255,.5)); color:#236dc0; box-shadow:inset 0 1px 0 rgba(255,255,255,.95); flex:0 0 auto; }
+.streak-current-hero span, .streak-month-hero span { display:block; font-size:10px; font-weight:900; letter-spacing:.12em; opacity:.62; }
+.streak-current-hero strong, .streak-month-hero strong { display:block; font-size:30px; line-height:1.1; margin-top:4px; }
+.streak-current-hero strong small, .streak-month-hero strong small { font-size:12px; font-weight:800; opacity:.58; }
+.streak-current-hero p, .streak-month-hero p { margin:5px 0 0; font-size:11px; opacity:.62; }
+.streak-calendar-nav { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.streak-calendar-nav strong { font-size:15px; }
+.streak-calendar-nav .calendar-nav-glass { width:38px; height:38px; flex:0 0 auto; }
+.streak-day.empty { background:transparent !important; border-color:transparent !important; box-shadow:none !important; }
+.streak-legend { display:flex; gap:18px; flex-wrap:wrap; margin-top:12px; font-size:10px; opacity:.7; }
+.streak-legend span { display:inline-flex; align-items:center; gap:6px; }
+.legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; background:rgba(255,255,255,.48); border:1px solid rgba(80,120,160,.22); }
+.legend-dot.done { background:#3a8ee8; border-color:#3a8ee8; }
+.legend-dot.today { background:transparent; border:2px solid #2563eb; }
+
+.app-shell.theme-light .streak-panel {
+  background:linear-gradient(145deg,rgba(255,255,255,.91),rgba(226,242,255,.84)) !important;
+  color:#163653 !important;
+  border-color:rgba(255,255,255,.98) !important;
+}
+.app-shell.theme-light .streak-current-hero,
+.app-shell.theme-light .streak-month-hero,
+.app-shell.theme-light .streak-version-grid>div,
+.app-shell.theme-light .streak-calendar {
+  background:rgba(255,255,255,.64) !important;
+  border-color:rgba(255,255,255,.9) !important;
+}
+.app-shell.theme-light .streak-day { color:#173e67; background:rgba(238,247,255,.72); border-color:rgba(62,111,157,.13); }
+.app-shell.theme-light .streak-day.done { color:#0f5eb1; background:rgba(53,139,229,.18); border-color:rgba(40,123,216,.3); }
+.app-shell.theme-light .streak-day.today { box-shadow:inset 0 0 0 2px #2563eb, 0 0 0 1px rgba(37,99,235,.12); }
+
+@media(max-width:720px){
+  .streak-hero-row { grid-template-columns:1fr; }
+  .streak-current-hero, .streak-month-hero { padding:16px; }
+  .goal-progress-hint { font-size:9px; }
+}
+.planner-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.planner-task-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+.task-delete-button {
+  flex: none;
+  opacity: .55;
+  transition: .2s ease;
+}
+
+.task-delete-button:hover {
+  opacity: 1;
+  background: rgba(255, 90, 90, .16);
+  color: #fff;
+}
+.habit-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+}
+
+.habit-delete-button {
+  opacity: .5;
+}
+
+.habit-delete-button:hover {
+  opacity: 1;
+  background: rgba(255, 90, 90, .16);
+}
+@media (max-width: 700px) {
+  .habit-card-actions {
+    align-self: flex-start;
+  }
+}.journal-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journal-history-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.journal-delete-button {
+  flex: none;
+  opacity: .5;
+}
+
+.journal-delete-button:hover {
+  opacity: 1;
+  background: rgba(255, 90, 90, .16);
+}
