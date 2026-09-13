@@ -440,7 +440,6 @@ function HabitsPage({ habits, setHabits, onAddHabit }: { habits: Habit[]; setHab
 
 function GoalsPage({ goals, setGoals, tasks }: { goals: Goal[]; setGoals: Dispatch<SetStateAction<Goal[]>>; tasks: Task[] }) {
   const [showForm, setShowForm] = useState(false); const [goalName, setGoalName] = useState(""); const [due, setDue] = useState(""); const [term, setTerm] = useState<"short"|"long">("short");
-  const goalCompletion = (g: Goal) => { const linked = tasks.filter(t => t.goalId === g.id); return linked.length ? Math.round(linked.filter(t => t.done).length / linked.length * 100) : g.progress; };
   const saveGoal=()=>{if(!goalName.trim())return; setGoals(gs=>[...gs,{id:uid("g"),title:goalName.trim(),progress:0,due:due||"No date",term}]);setGoalName("");setDue("");setTerm("short");setShowForm(false);};
   return <div className="page-content"><div className="page-header"><div><div className="eyebrow"><Icon name="goal" size={16} /> DIRECTION</div><h1>Goals with less pressure.</h1><p>Set your own completion percentage and update it as you make progress.</p></div><button type="button" className="primary-button" onClick={()=>setShowForm(true)}><Icon name="plus" size={18}/> Add goal</button></div>{showForm&&<Glass className="goal-form"><div className="section-label"><Icon name="target" size={15}/> NEW GOAL</div><div className="goal-form-fields"><label className="modal-field"><span>Goal name</span><input value={goalName} onChange={e=>setGoalName(e.target.value)} placeholder="e.g. Get placed in a software role" autoFocus/></label><label className="modal-field"><span>Goal type</span><select value={term} onChange={e=>setTerm(e.target.value as "short"|"long")}><option value="short">Short term</option><option value="long">Long term</option></select></label><label className="modal-field"><span>Due date</span><input type="date" value={due} onChange={e=>setDue(e.target.value)}/></label></div><div className="goal-form-actions"><button type="button" className="secondary-button compact" onClick={()=>setShowForm(false)}>Cancel</button><button type="button" className="primary-button" onClick={saveGoal}>Save goal <Icon name="check" size={17}/></button></div></Glass>}<div className="goal-type-summary"><Glass><span>SHORT TERM</span><strong>{goals.filter(g=>g.term !== "long").length}</strong><small>quick wins & milestones</small></Glass><Glass><span>LONG TERM</span><strong>{goals.filter(g=>g.term === "long").length}</strong><small>bigger direction</small></Glass></div><div className="goals-grid">{goals.map(g=>{const linked=tasks.filter(t=>t.goalId===g.id); const linkedDone=linked.filter(t=>t.done).length; return <Glass className="goal-card" key={g.id}><div className="goal-card-head"><div className="goal-icon"><Icon name="target" size={21}/></div><span className={`goal-term ${g.term === "long" ? "long" : "short"}`}>{g.term === "long" ? "Long term" : "Short term"}</span><span className="goal-due">Due {g.due}</span></div><h2>{g.title}</h2><div className="goal-linked-count">⌁ {linked.length} linked task{linked.length === 1 ? "" : "s"}{linked.length ? ` · ${linkedDone} completed` : ""}</div><div className="goal-progress-label"><span>Your completion</span><strong>{g.progress}%</strong></div><input className="goal-progress-slider" type="range" min="0" max="100" step="1" value={g.progress} onChange={e=>setGoals(gs=>gs.map(x=>x.id===g.id?{...x,progress:Number(e.target.value)}:x))} aria-label={`Set ${g.title} completion percentage`}/><div className="goal-bar"><span style={{width:`${g.progress}%`}}/></div><div className="goal-progress-hint">Drag the slider to update your goal from 0% to 100%.</div><div className="goal-buttons"><button type="button" className="secondary-button compact" onClick={()=>setGoals(gs=>gs.map(x=>x.id===g.id?{...x,progress:100}:x))}>{g.progress>=100?"Completed":"Mark 100%"} <Icon name="check" size={15}/></button><button type="button" className="icon-button" onClick={()=>setGoals(gs=>gs.filter(x=>x.id!==g.id))}><Icon name="trash" size={16}/></button></div></Glass>})}</div></div>;
 }
@@ -495,6 +494,9 @@ function JournalPage({ entries, setEntries, initialDate }: { entries: JournalEnt
   ];
   const quote = quotes[Math.abs(selectedDate.split("-").join("").split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % quotes.length];
   const historyDates = Array.from(new Set(entries.map(e => e.date))).sort().reverse().slice(0, 10);
+  
+  const journalSelected = new Date(`${selectedDate}T12:00:00`);
+  const journalDates = [-3, -2, -1, 0, 1, 2, 3].map(offset => addDays(journalSelected, offset));
 
   return <div className="page-content">
     <div className="page-header">
@@ -507,13 +509,62 @@ function JournalPage({ entries, setEntries, initialDate }: { entries: JournalEnt
     </Glass>
 
     <Glass className="journal-date-card">
-      <div className="journal-date-nav">
-        <button type="button" className="icon-button" onClick={() => setSelectedDate(dateKey(addDays(new Date(`${selectedDate}T12:00:00`), -1)))} aria-label="Previous day"><Icon name="back" size={17}/></button>
-        <div><span className="section-label"><Icon name="calendar" size={14}/> JOURNAL DATE</span><strong>{prettyDate(selectedDate)}</strong></div>
-        <button type="button" className="icon-button" onClick={() => setSelectedDate(dateKey(addDays(new Date(`${selectedDate}T12:00:00`), 1)))} aria-label="Next day"><Icon name="chevron" size={17}/></button>
+      <div className="planner-calendar-v2">
+        <div className="planner-calendar-head">
+          <button
+            type="button"
+            className="calendar-nav-glass"
+            onClick={() => setSelectedDate(dateKey(addDays(journalSelected, -1)))}
+            title="Previous day"
+            aria-label="Previous day"
+          >
+            <Icon name="back" size={17} />
+          </button>
+
+          <div className="planner-calendar-title">
+            <span>YOUR WEEK</span>
+            <strong>{journalSelected.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</strong>
+          </div>
+
+          <button
+            type="button"
+            className="calendar-today-glass"
+            onClick={() => setSelectedDate(todayKey)}
+          >
+            Today
+          </button>
+
+          <button
+            type="button"
+            className="calendar-nav-glass"
+            onClick={() => setSelectedDate(dateKey(addDays(journalSelected, 1)))}
+            title="Next day"
+            aria-label="Next day"
+          >
+            <Icon name="chevron" size={17} />
+          </button>
+        </div>
+
+        <div className="planner-week-grid">
+          {journalDates.map(d => {
+            const key = dateKey(d);
+            const isToday = key === todayKey;
+            return (
+              <button
+                type="button"
+                key={key}
+                className={`planner-day-cell ${key === selectedDate ? "active" : ""} ${isToday ? "today" : ""}`}
+                onClick={() => setSelectedDate(key)}
+                aria-label={`Select ${prettyDate(key)}`}
+              >
+                <span>{d.toLocaleDateString(undefined, { weekday: "short" })}</span>
+                <strong>{d.getDate()}</strong>
+                {isToday && <i>Today</i>}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      {selectedDate !== todayKey && <button type="button" className="soft-pill journal-today-button" onClick={() => setSelectedDate(todayKey)}>Back to today</button>}
-      <div className="journal-progress"><span>Reflection progress</span><strong>{[accomplished, learned, tomorrow].filter(x => x.trim()).length}/3 completed</strong></div>
     </Glass>
 
     <div className="journal-form-grid journal-three-prompts">
@@ -598,7 +649,7 @@ function App() {
   const [streakOpen, setStreakOpen] = useState(false);
   const [newTask, setNewTask] = useState({ title: "", time: "9:00 AM", date: todayKey, priority: "normal" as "high"|"normal"|"low", goalId: "" });
   const [newHabit, setNewHabit] = useState("");
-  const [journalDate, setJournalDate] = useState(todayKey);
+  
   const [draftIntent, setDraftIntent] = useState(intention);
   const [dark, setDark] = useState<boolean>(() => localStorage.getItem("dayflow-theme") === "dark");
   const [weather, setWeather] = useState({ code: 0, isDay: 1, label: "Weather" });
@@ -667,7 +718,7 @@ function App() {
         {page === "plan" && <PlanPage tasks={tasks} setTasks={setTasks} goals={goals} onAddTask={addTask} onIntent={openIntent} />}
         {page === "habits" && <HabitsPage habits={habits} setHabits={setHabits} onAddHabit={addHabit} />}
         {page === "goals" && <GoalsPage goals={goals} setGoals={setGoals} tasks={tasks} />}
-        {page === "journal" && <JournalPage entries={entries} setEntries={setEntries} initialDate={journalDate} />}
+        {page === "journal" && <JournalPage entries={entries} setEntries={setEntries} initialDate={todayKey} />}
         {page === "insights" && <InsightsPage tasks={tasks} habits={habits} goals={goals} entries={entries} />}
       </main>
       <button type="button" className="quick-add-float" onClick={() => addTask(page === "plan" ? todayKey : todayKey)} aria-label="Quick add task"><Icon name="plus" size={21}/></button>
