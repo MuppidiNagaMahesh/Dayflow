@@ -1,58 +1,10 @@
 @import "./App.css";
-
-:root {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-  color-scheme: light dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-html {
-  width: 100%;
-  min-width: 320px;
-  min-height: 100%;
-  overflow-x: hidden;
-  background: #5d9fdb;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-
-/* Global iOS-like rendering foundation */
-html, body { background: #7ea9d8; }
-body { overflow-x: hidden; }
-input, textarea, select { -webkit-appearance: none; appearance: none; }
-input[type="checkbox"] { -webkit-appearance: auto; appearance: auto; }
-button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
-::selection { background: rgba(94,158,255,.30); }
-
-
-/* DayFlow global iOS 26 rendering */
-html, body, #root { min-height:100%; }
-body { background:#7ea9d8; }
-* { -webkit-tap-highlight-color:transparent; }
-button, input, textarea, select { font-family:Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
-::selection { background:rgba(22,119,255,.22); }
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+html,body,#root{width:100%;min-width:320px;min-height:100%;margin:0;overflow-x:hidden;}
+body{min-height:100vh;}
+button,input,textarea,select{font:inherit;}
+button{-webkit-tap-highlight-color:transparent;}
+input,textarea,select{-webkit-appearance:none;appearance:none;}
+input[type=checkbox]{-webkit-appearance:auto;appearance:auto;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+::selection{background:rgba(70,150,245,.20);}
