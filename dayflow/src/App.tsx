@@ -234,16 +234,11 @@ function WeatherIcon({ code, isDay, size = 19 }: { code: number; isDay: number; 
   return <svg {...common}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>;
 }
 
-function TopBar({ onLogout, onOpenIntent, dark, setDark, weather }: { onLogout: () => void; onOpenIntent: () => void; dark: boolean; setDark: (v: boolean) => void; weather: { code: number; isDay: number; label: string } }) {
+function TopBar({ onLogout, dark, setDark, weather }: { onLogout: () => void; dark: boolean; setDark: (v: boolean) => void; weather: { code: number; isDay: number; label: string } }) {
   return (
     <header className="topbar">
       <div className="brand-lockup"><div className="brand-mark flow-mark"><Icon name="flow" size={21} /></div><span>DayFlow</span></div>
       <div className="topbar-actions">
-        <button className="today-pill" onClick={onOpenIntent}>
-          <span className="status-dot" />
-          <span className="today-label">TODAY</span>
-          <strong>{dayLabel}</strong>
-        </button>
         <div className="weather-pill" title="Current weather">
           <span className="weather-pill-icon"><WeatherIcon code={weather.code} isDay={weather.isDay} /></span>
           <span>{weather.label}</span>
@@ -541,6 +536,41 @@ function TimePicker({ value, onChange }: { value: string; onChange: (value: stri
 }
 
 function App() {
+  useEffect(() => {
+    const isTextField = (target: EventTarget | null) => {
+      const el = target as HTMLElement | null;
+      if (!el) return false;
+      return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT";
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (window.innerWidth <= 700 && isTextField(event.target)) {
+        document.body.classList.add("dayflow-keyboard-open");
+        window.setTimeout(() => {
+          const active = document.activeElement as HTMLElement | null;
+          active?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 180);
+      }
+    };
+
+    const handleFocusOut = () => {
+      window.setTimeout(() => {
+        if (!isTextField(document.activeElement)) {
+          document.body.classList.remove("dayflow-keyboard-open");
+        }
+      }, 160);
+    };
+
+    document.addEventListener("focusin", handleFocusIn);
+    document.addEventListener("focusout", handleFocusOut);
+
+    return () => {
+      document.removeEventListener("focusin", handleFocusIn);
+      document.removeEventListener("focusout", handleFocusOut);
+      document.body.classList.remove("dayflow-keyboard-open");
+    };
+  }, []);
+
   const [authenticated, setAuthenticated] = useState<boolean>(() => (localStorage.getItem("dayflow-auth") === "true" || localStorage.getItem("dayflow-auth") === "1"));
   const [user, setUser] = useState<string>(() => localStorage.getItem("dayflow-user") || localStorage.getItem("dayflow-name") || localStorage.getItem("dayflow-email") || "M");
   const [page, setPage] = useState<Page>("home");
@@ -616,7 +646,7 @@ function App() {
     <Sidebar page={page} setPage={setPage} onLogout={logout} />
     {streakOpen && <StreakOverlay tasks={tasks} habits={habits} onClose={() => setStreakOpen(false)} />}
     <div className="main-area">
-      <TopBar onLogout={logout} onOpenIntent={openIntent} dark={dark} setDark={setDark} weather={weather} />
+      <TopBar onLogout={logout} dark={dark} setDark={setDark} weather={weather} />
       <main className="route-area" key={page}>
         {page === "home" && <HomePage onStreakOpen={() => setStreakOpen(true)} onOpenJournalDate={() => { setPage("journal"); }} tasks={tasks} setTasks={setTasks} habits={habits} goals={goals} entries={entries} intention={intention} user={user} onAddTask={addTask} onAddHabit={addHabit} onNavigate={setPage} onStudyMode={() => setStudyMode(true)} onIntent={openIntent} />}
         {page === "plan" && <PlanPage tasks={tasks} setTasks={setTasks} goals={goals} onAddTask={addTask} />}

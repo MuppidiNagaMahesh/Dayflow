@@ -2637,7 +2637,6 @@ button:focus:not(:focus-visible) { outline:none; }
 .icon-button.danger{color:#c45775 !important;}
 .app-shell.theme-dark .icon-button.danger{color:#ff9bb8 !important;}
 
-
 /* Goals: clearer term and linked-task hierarchy */
 .goal-card{overflow:hidden !important;}
 .goal-card-head{gap:8px !important;align-items:center !important;}
@@ -2699,4 +2698,200 @@ button:focus:not(:focus-visible) { outline:none; }
   .journal-v2-save-row{justify-content:stretch;flex-direction:column;align-items:stretch;}
   .journal-save-button{width:100%;}
   .journal-v2-save-row>span{text-align:center;}
+}
+
+
+/* =========================================================
+   DAYFLOW V2 — TRUE iOS 26 LIQUID GLASS MODALS
+   The entire page behind a modal is heavily blurred and
+   darkened. The modal content remains sharp and readable.
+   ========================================================= */
+
+.modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  background: rgba(4, 12, 30, 0.62) !important;
+  backdrop-filter: blur(36px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(125%) !important;
+  isolation: isolate;
+}
+
+.modal-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(7, 17, 38, 0.20);
+  backdrop-filter: blur(22px) saturate(115%);
+  -webkit-backdrop-filter: blur(22px) saturate(115%);
+  pointer-events: none;
+}
+
+.modal-card {
+  position: relative !important;
+  z-index: 2 !important;
+  width: min(540px, calc(100vw - 32px)) !important;
+  max-height: min(92dvh, 760px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  border-radius: 32px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(245, 251, 255, 0.90),
+    rgba(225, 240, 250, 0.84)
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    0 34px 90px rgba(5, 19, 43, 0.42),
+    0 10px 30px rgba(5, 19, 43, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(55, 105, 150, 0.10) !important;
+  backdrop-filter: blur(30px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(145%) !important;
+}
+
+.modal-card::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.95),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.modal-card input,
+.modal-card textarea,
+.modal-card select {
+  position: relative;
+  z-index: 3;
+}
+
+.modal-card .modal-field input,
+.modal-card .modal-field select,
+.modal-card .modal-textarea {
+  background: rgba(255,255,255,.76) !important;
+  color: #142b49 !important;
+  border: 1px solid rgba(54, 101, 145, .20) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.86),
+    0 4px 16px rgba(35, 75, 115, .06) !important;
+}
+
+.modal-card .modal-field input::placeholder,
+.modal-card .modal-textarea::placeholder {
+  color: rgba(42, 70, 101, .58) !important;
+}
+
+.modal-card .modal-field input:focus,
+.modal-card .modal-field select:focus,
+.modal-card .modal-textarea:focus {
+  outline: none !important;
+  border-color: rgba(46, 137, 235, .58) !important;
+  box-shadow:
+    0 0 0 3px rgba(46, 137, 235, .13),
+    inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+/* Dark Liquid Glass modal */
+.app-shell.theme-dark .modal-backdrop {
+  background: rgba(1, 7, 23, 0.72) !important;
+  backdrop-filter: blur(40px) saturate(130%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(130%) !important;
+}
+
+.app-shell.theme-dark .modal-backdrop::before {
+  background: rgba(8, 20, 48, .18);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.app-shell.theme-dark .modal-card {
+  background: linear-gradient(
+    145deg,
+    rgba(23, 48, 87, .94),
+    rgba(9, 25, 56, .96)
+  ) !important;
+  border-color: rgba(174, 218, 255, .30) !important;
+  box-shadow:
+    0 34px 90px rgba(0,0,0,.58),
+    0 12px 35px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.23),
+    inset 0 -1px 0 rgba(80,150,230,.10) !important;
+}
+
+.app-shell.theme-dark .modal-card .modal-field input,
+.app-shell.theme-dark .modal-card .modal-field select,
+.app-shell.theme-dark .modal-card .modal-textarea {
+  background: rgba(3, 17, 39, .82) !important;
+  color: #f5fbff !important;
+  border-color: rgba(177, 218, 255, .22) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 4px 18px rgba(0,0,0,.12) !important;
+}
+
+.app-shell.theme-dark .modal-card .modal-field input::placeholder,
+.app-shell.theme-dark .modal-card .modal-textarea::placeholder {
+  color: rgba(225,239,255,.56) !important;
+}
+
+/* Mobile: stronger environmental blur */
+@media (max-width: 700px) {
+  .modal-backdrop {
+    align-items: center !important;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)) 12px !important;
+    background: rgba(2, 10, 28, .70) !important;
+    backdrop-filter: blur(46px) saturate(128%) !important;
+    -webkit-backdrop-filter: blur(46px) saturate(128%) !important;
+  }
+
+  .modal-backdrop::before {
+    background: rgba(4, 13, 32, .20) !important;
+    backdrop-filter: blur(26px) !important;
+    -webkit-backdrop-filter: blur(26px) !important;
+  }
+
+  .modal-card {
+    width: calc(100vw - 24px) !important;
+    max-width: 560px !important;
+    max-height: calc(100dvh - 24px) !important;
+    padding: 21px !important;
+    border-radius: 30px !important;
+  }
+
+  /* When Android/iOS keyboard is open, keep the active modal above it. */
+  body.dayflow-keyboard-open .modal-backdrop {
+    align-items: flex-start !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  body.dayflow-keyboard-open .modal-card {
+    max-height: calc(100dvh - 20px) !important;
+    transform-origin: center top;
+  }
+
+  /* The page navigation should not compete with the keyboard/modal. */
+  body.dayflow-keyboard-open .bottom-nav,
+  body.dayflow-keyboard-open .mobile-bottom-nav {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Remove the old top Day/Date pill completely. */
+.topbar .today-pill {
+  display: none !important;
 }
