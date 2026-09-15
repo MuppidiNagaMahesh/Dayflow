@@ -2895,3 +2895,172 @@ button:focus:not(:focus-visible) { outline:none; }
 .topbar .today-pill {
   display: none !important;
 }
+/* =========================================================
+   DAYFLOW — MOBILE MODAL BACKDROP FIX
+   SAME STRONG BLUR IN LIGHT + DARK MODE
+   ========================================================= */
+
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  /* Neutral overlay — works in BOTH themes */
+  background: rgba(8, 14, 28, 0.58) !important;
+
+  /*
+   * THIS is the important part.
+   * Everything behind the modal becomes blurred.
+   */
+  backdrop-filter: blur(42px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(125%) !important;
+}
+
+/* Extra full-screen blur layer */
+.modal-overlay::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  background: rgba(8, 14, 28, 0.20) !important;
+
+  backdrop-filter: blur(24px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(120%) !important;
+
+  pointer-events: none !important;
+}
+
+/*
+ * Modal stays ABOVE the blur.
+ */
+.modal-card {
+  position: relative !important;
+  z-index: 2 !important;
+
+  isolation: isolate;
+
+  width: min(560px, calc(100vw - 32px));
+
+  max-height: calc(100dvh - 40px);
+
+  overflow-y: auto;
+
+  border-radius: 30px;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.70);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.35),
+    0 8px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80);
+
+  backdrop-filter: blur(24px) saturate(135%);
+  -webkit-backdrop-filter: blur(24px) saturate(135%);
+}
+
+
+/* =========================================================
+   LIGHT MODE
+   ========================================================= */
+
+:root:not(.dark) .modal-overlay,
+body:not(.dark) .modal-overlay {
+  background: rgba(8, 14, 28, 0.52) !important;
+
+  backdrop-filter:
+    blur(42px)
+    saturate(125%) !important;
+
+  -webkit-backdrop-filter:
+    blur(42px)
+    saturate(125%) !important;
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.dark .modal-overlay,
+[data-theme="dark"] .modal-overlay,
+body.dark .modal-overlay {
+  background: rgba(3, 8, 22, 0.62) !important;
+
+  backdrop-filter:
+    blur(42px)
+    saturate(125%) !important;
+
+  -webkit-backdrop-filter:
+    blur(42px)
+    saturate(125%) !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .modal-overlay {
+    padding: 16px !important;
+
+    /*
+     * Strong blur on mobile.
+     */
+    backdrop-filter:
+      blur(48px)
+      saturate(130%) !important;
+
+    -webkit-backdrop-filter:
+      blur(48px)
+      saturate(130%) !important;
+  }
+
+  .modal-overlay::before {
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+  }
+
+  .modal-card {
+    width: 100% !important;
+    max-width: 560px !important;
+
+    max-height: calc(100dvh - 32px) !important;
+
+    border-radius: 30px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE KEYBOARD
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  body.dayflow-keyboard-open .modal-overlay {
+    align-items: flex-start !important;
+
+    padding-top: 12px !important;
+  }
+
+  body.dayflow-keyboard-open .modal-card {
+    max-height: calc(100dvh - 24px) !important;
+  }
+
+  body.dayflow-keyboard-open .bottom-nav,
+  body.dayflow-keyboard-open .mobile-bottom-nav {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
