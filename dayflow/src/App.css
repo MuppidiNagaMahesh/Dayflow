@@ -3064,92 +3064,157 @@ body.dark .modal-overlay {
     pointer-events: none !important;
   }
 }
-/* =========================================================
-   STRONG LIGHT-MODE BACKGROUND BLUR WHILE ENTERING TEXT
-   ========================================================= */
+/* ============================================================
+   DAYFLOW — MAXIMUM LIGHT MODE INFORMATION-ENTRY BLUR
+   ============================================================ */
 
-/* Normal Light Mode modal */
+/* Light mode modal backdrop */
 .theme-light .modal-backdrop {
-  background: rgba(245, 248, 255, 0.72) !important;
+  background: rgba(225, 234, 246, 0.88) !important;
 
   backdrop-filter:
-    blur(42px)
-    saturate(120%)
-    brightness(1.04) !important;
+    blur(90px)
+    saturate(115%)
+    brightness(1.02) !important;
 
   -webkit-backdrop-filter:
-    blur(42px)
-    saturate(120%)
-    brightness(1.04) !important;
+    blur(90px)
+    saturate(115%)
+    brightness(1.02) !important;
 }
 
-/* Stronger blur while keyboard/text input is active */
-.theme-light body.dayflow-keyboard-open .modal-backdrop,
+
+/* ============================================================
+   WHEN ENTERING INFORMATION
+   MAKE THE WHOLE WEBSITE BEHIND THE MODAL DISAPPEAR
+   ============================================================ */
+
 body.dayflow-keyboard-open .theme-light .modal-backdrop {
-  background: rgba(245, 248, 255, 0.84) !important;
+  background: rgba(225, 234, 246, 0.94) !important;
 
   backdrop-filter:
-    blur(70px)
-    saturate(115%)
-    brightness(1.06) !important;
+    blur(120px)
+    saturate(105%)
+    brightness(1.04) !important;
 
   -webkit-backdrop-filter:
-    blur(70px)
-    saturate(115%)
-    brightness(1.06) !important;
+    blur(120px)
+    saturate(105%)
+    brightness(1.04) !important;
 }
 
-/* Make the content behind the modal even less visible */
-.theme-light body.dayflow-keyboard-open .app-shell > * {
-  filter: blur(4px);
-  transition: filter 0.25s ease;
+
+/* Extra visual separation for the entire background */
+body.dayflow-keyboard-open .theme-light .app-shell {
+  isolation: isolate;
 }
 
-/* Keep modal itself sharp */
-.theme-light body.dayflow-keyboard-open .modal-backdrop .modal-card,
-.theme-light body.dayflow-keyboard-open .modal-backdrop .modal-sheet {
+
+/* Blur everything behind the modal */
+body.dayflow-keyboard-open .theme-light .app-shell > * {
+  filter: blur(14px) !important;
+  transition: filter 0.2s ease !important;
+}
+
+
+/* Keep the actual modal perfectly sharp */
+body.dayflow-keyboard-open .theme-light .modal-backdrop {
   filter: none !important;
 }
 
-/* Stronger glass separation around the text-entry modal */
-.theme-light .modal-card,
-.theme-light .modal-sheet {
-  background: rgba(255, 255, 255, 0.82) !important;
-
-  backdrop-filter: blur(24px) saturate(135%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(135%) !important;
-
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
-
-  box-shadow:
-    0 30px 90px rgba(20, 30, 70, 0.22),
-    0 8px 30px rgba(20, 30, 70, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+body.dayflow-keyboard-open .theme-light .modal-backdrop .modal-card,
+body.dayflow-keyboard-open .theme-light .modal-backdrop .modal-sheet,
+body.dayflow-keyboard-open .theme-light .modal-backdrop form {
+  filter: none !important;
 }
 
-/* Text fields remain highly readable */
-.theme-light .modal-card input,
-.theme-light .modal-card textarea,
-.theme-light .modal-card select,
-.theme-light .modal-sheet input,
-.theme-light .modal-sheet textarea,
-.theme-light .modal-sheet select {
-  background: rgba(255, 255, 255, 0.92) !important;
-  color: #111827 !important;
-  border-color: rgba(70, 80, 110, 0.22) !important;
+
+/* ============================================================
+   MAXIMUM GLASS ENTRY WINDOW
+   ============================================================ */
+
+.theme-light .modal-backdrop .modal-card,
+.theme-light .modal-backdrop .modal-sheet {
+  background: rgba(250, 252, 255, 0.90) !important;
+
+  backdrop-filter:
+    blur(32px)
+    saturate(140%) !important;
+
+  -webkit-backdrop-filter:
+    blur(32px)
+    saturate(140%) !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.96) !important;
+
+  box-shadow:
+    0 40px 120px rgba(15, 35, 75, 0.30),
+    0 15px 45px rgba(15, 35, 75, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
 
-/* Focused text field */
-.theme-light .modal-card input:focus,
-.theme-light .modal-card textarea:focus,
-.theme-light .modal-card select:focus,
-.theme-light .modal-sheet input:focus,
-.theme-light .modal-sheet textarea:focus,
-.theme-light .modal-sheet select:focus {
-  background: rgba(255, 255, 255, 0.98) !important;
-  color: #111827 !important;
-  border-color: rgba(80, 90, 180, 0.65) !important;
+
+/* ============================================================
+   INPUTS — CRYSTAL CLEAR WHILE BACKGROUND IS BLURRED
+   ============================================================ */
+
+.theme-light .modal-backdrop input,
+.theme-light .modal-backdrop textarea,
+.theme-light .modal-backdrop select {
+  background: rgba(255, 255, 255, 0.97) !important;
+
+  color: #10284a !important;
+
+  border: 1px solid rgba(65, 85, 125, 0.25) !important;
+
   box-shadow:
-    0 0 0 3px rgba(90, 100, 200, 0.12),
-    0 8px 24px rgba(30, 40, 100, 0.08) !important;
+    inset 0 1px 2px rgba(20, 40, 70, 0.04),
+    0 4px 15px rgba(30, 55, 100, 0.06) !important;
+}
+
+
+/* Active input */
+.theme-light .modal-backdrop input:focus,
+.theme-light .modal-backdrop textarea:focus,
+.theme-light .modal-backdrop select:focus {
+  background: #ffffff !important;
+
+  color: #081d3a !important;
+
+  border-color: rgba(55, 105, 210, 0.75) !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 4px rgba(65, 115, 220, 0.14),
+    0 8px 25px rgba(30, 60, 120, 0.10) !important;
+}
+
+
+/* ============================================================
+   MOBILE — EVEN STRONGER WHILE KEYBOARD / TEXT ENTRY IS ACTIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+  body.dayflow-keyboard-open .theme-light .modal-backdrop {
+    background: rgba(225, 234, 246, 0.96) !important;
+
+    backdrop-filter:
+      blur(130px)
+      saturate(100%) !important;
+
+    -webkit-backdrop-filter:
+      blur(130px)
+      saturate(100%) !important;
+  }
+
+  body.dayflow-keyboard-open .theme-light .app-shell > * {
+    filter: blur(18px) !important;
+  }
+
+  body.dayflow-keyboard-open .theme-light .modal-backdrop .modal-card,
+  body.dayflow-keyboard-open .theme-light .modal-backdrop .modal-sheet {
+    filter: none !important;
+  }
 }
