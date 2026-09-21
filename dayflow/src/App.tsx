@@ -1839,7 +1839,7 @@ function GoalsPage({
     return !!goal.target_date && goal.target_date > shiftDateValue(todayString(), 120);
   });
   const completed = filtered.filter((goal) => goal.completed);
-  const allCompleted = goals.filter((goal) => goal.completed).length;
+  
   const completion = goals.length ? Math.round(goals.reduce((sum, goal) => sum + getProgress(goal), 0) / goals.length) : 0;
 
   return (
